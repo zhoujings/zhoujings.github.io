@@ -2,17 +2,25 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>test | ZhouJingS的java之旅</title>
-<link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602498685218">
+<title>springboot项目中添加redis | ZhouJingS的java之旅</title>
+<link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602503646257">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="test | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="springboot项目中添加redis | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="测试
-" />
+    <meta name="description" content="##1、在pom文件中添加依赖
+
+org.springframework.boot
+spring-boot-starter-data-redis
+
+##2、配置reids
+spring:
+redis:
+host: 127.0.0.1
+por..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -22,7 +30,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://zhoujings.github.io">
-  <img class="avatar" src="https://zhoujings.github.io/images/avatar.png?v=1602498685218" alt="">
+  <img class="avatar" src="https://zhoujings.github.io/images/avatar.png?v=1602503646257" alt="">
   </a>
   <h1 class="site-title">
     ZhouJingS的java之旅
@@ -75,21 +83,95 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              test
+              springboot项目中添加redis
             </h2>
             <div class="post-info">
               <span>
                 2020-10-12
               </span>
               <span>
-                1 min read
+                2 min read
               </span>
               
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <p>测试</p>
+                <p>##1、在pom文件中添加依赖<br>
+<dependency><br>
+<groupId>org.springframework.boot</groupId><br>
+<artifactId>spring-boot-starter-data-redis</artifactId><br>
+</dependency><br>
+##2、配置reids<br>
+spring:<br>
+redis:<br>
+host: 127.0.0.1<br>
+port: 6379<br>
+##3、添加redis配置文件</p>
+<pre><code class="language-bash">package com.zhoujs.redis.config;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import java.net.UnknownHostException;
+/**
+ * @author zhoujs
+ * @create 2020/9/21 17:39
+ **/
+@Configuration
+@EnableCaching
+public class RedisConfig {
+    @Bean
+    public RedisTemplate&lt;String, Object&gt; redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
+        RedisTemplate&lt;String, Object&gt; template = new RedisTemplate();
+        template.setConnectionFactory(redisConnectionFactory);
+        Jackson2JsonRedisSerializer Jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        ObjectMapper om  = new ObjectMapper();
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
+        Jackson2JsonRedisSerializer.setObjectMapper(om);
+        //String序列化
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        //key采用String的序列化方式
+        template.setKeySerializer(stringRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(Jackson2JsonRedisSerializer);
+        template.setHashValueSerializer(Jackson2JsonRedisSerializer);
+        template.afterPropertiesSet();
+        return template;
+    }
+}
+</code></pre>
+<p>##添加缓存配置<br>
+在项目的service层中的实现类中，添加@Cacheable注解。</p>
+<p>import java.util.HashMap;</p>
+<p>/**</p>
+<ul>
+<li>
+<p>@author zhoujs</p>
+</li>
+<li>
+<p>@create 2020/9/21 17:44<br>
+**/<br>
+@Service<br>
+public class UserLoginServiceImpl implements UserLoginService {<br>
+@Autowired<br>
+private UserLoginMapper userLoginMapper;</p>
+<p>@Override<br>
+@Cacheable(value = &quot;usercache&quot;)<br>
+public HashMap getByUserName(String userName) {<br>
+System.out.println(&quot;此时没有走缓存&quot;);<br>
+return userLoginMapper.getByUserName(userName);<br>
+}<br>
+}</p>
+</li>
+</ul>
 
               </div>
               <div class="toc-container">

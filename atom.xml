@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-12T10:33:52.877Z</updated>
+    <updated>2020-10-12T11:54:19.386Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -11,12 +11,86 @@
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
     <entry>
-        <title type="html"><![CDATA[test]]></title>
+        <title type="html"><![CDATA[springboot项目中添加redis]]></title>
         <id>https://zhoujings.github.io/post/test/</id>
         <link href="https://zhoujings.github.io/post/test/">
         </link>
         <updated>2020-10-12T10:04:32.000Z</updated>
-        <content type="html"><![CDATA[<p>测试</p>
+        <content type="html"><![CDATA[<p>##1、在pom文件中添加依赖<br>
+<dependency><br>
+<groupId>org.springframework.boot</groupId><br>
+<artifactId>spring-boot-starter-data-redis</artifactId><br>
+</dependency><br>
+##2、配置reids<br>
+spring:<br>
+redis:<br>
+host: 127.0.0.1<br>
+port: 6379<br>
+##3、添加redis配置文件</p>
+<pre><code class="language-bash">package com.zhoujs.redis.config;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import java.net.UnknownHostException;
+/**
+ * @author zhoujs
+ * @create 2020/9/21 17:39
+ **/
+@Configuration
+@EnableCaching
+public class RedisConfig {
+    @Bean
+    public RedisTemplate&lt;String, Object&gt; redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
+        RedisTemplate&lt;String, Object&gt; template = new RedisTemplate();
+        template.setConnectionFactory(redisConnectionFactory);
+        Jackson2JsonRedisSerializer Jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        ObjectMapper om  = new ObjectMapper();
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
+        Jackson2JsonRedisSerializer.setObjectMapper(om);
+        //String序列化
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+        //key采用String的序列化方式
+        template.setKeySerializer(stringRedisSerializer);
+        template.setHashKeySerializer(stringRedisSerializer);
+        template.setValueSerializer(Jackson2JsonRedisSerializer);
+        template.setHashValueSerializer(Jackson2JsonRedisSerializer);
+        template.afterPropertiesSet();
+        return template;
+    }
+}
+</code></pre>
+<p>##添加缓存配置<br>
+在项目的service层中的实现类中，添加@Cacheable注解。</p>
+<p>import java.util.HashMap;</p>
+<p>/**</p>
+<ul>
+<li>
+<p>@author zhoujs</p>
+</li>
+<li>
+<p>@create 2020/9/21 17:44<br>
+**/<br>
+@Service<br>
+public class UserLoginServiceImpl implements UserLoginService {<br>
+@Autowired<br>
+private UserLoginMapper userLoginMapper;</p>
+<p>@Override<br>
+@Cacheable(value = &quot;usercache&quot;)<br>
+public HashMap getByUserName(String userName) {<br>
+System.out.println(&quot;此时没有走缓存&quot;);<br>
+return userLoginMapper.getByUserName(userName);<br>
+}<br>
+}</p>
+</li>
+</ul>
 ]]></content>
     </entry>
 </feed>
