@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-12T12:11:30.202Z</updated>
+    <updated>2020-10-12T12:17:45.385Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -16,19 +16,19 @@
         <link href="https://zhoujings.github.io/post/test/">
         </link>
         <updated>2020-10-12T10:04:32.000Z</updated>
-        <content type="html"><![CDATA[<p>##1、在pom文件中添加依赖##</p>
+        <content type="html"><![CDATA[<h2 id="1-在pom文件中添加依赖">1、在pom文件中添加依赖</h2>
 <pre><code class="language-bash">&lt;dependency&gt;
             &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
             &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
         &lt;/dependency&gt;
 </code></pre>
-<p>##2、配置reids##</p>
+<h2 id="2-配置reids">2、配置reids</h2>
 <pre><code class="language-bash">spring:
   redis:
     host: 127.0.0.1
     port: 6379
 </code></pre>
-<p>##3、添加redis配置文件##</p>
+<h2 id="3-添加redis配置文件">3、添加redis配置文件</h2>
 <pre><code class="language-bash">package com.zhoujs.redis.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -46,7 +46,6 @@ import java.net.UnknownHostException;
  * @create 2020/9/21 17:39
  **/
 @Configuration
-@EnableCaching
 public class RedisConfig {
     @Bean
     public RedisTemplate&lt;String, Object&gt; redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
