@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-12T11:54:19.386Z</updated>
+    <updated>2020-10-12T11:57:51.682Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -16,17 +16,19 @@
         <link href="https://zhoujings.github.io/post/test/">
         </link>
         <updated>2020-10-12T10:04:32.000Z</updated>
-        <content type="html"><![CDATA[<p>##1、在pom文件中添加依赖<br>
-<dependency><br>
-<groupId>org.springframework.boot</groupId><br>
-<artifactId>spring-boot-starter-data-redis</artifactId><br>
-</dependency><br>
-##2、配置reids<br>
-spring:<br>
-redis:<br>
-host: 127.0.0.1<br>
-port: 6379<br>
-##3、添加redis配置文件</p>
+        <content type="html"><![CDATA[<p>##1、在pom文件中添加依赖##</p>
+<pre><code class="language-bash">&lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+</code></pre>
+<p>##2、配置reids##</p>
+<pre><code class="language-bash">spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+</code></pre>
+<p>##3、添加redis配置文件##</p>
 <pre><code class="language-bash">package com.zhoujs.redis.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -67,30 +69,27 @@ public class RedisConfig {
     }
 }
 </code></pre>
-<p>##添加缓存配置<br>
+<p>##添加缓存配置##<br>
 在项目的service层中的实现类中，添加@Cacheable注解。</p>
-<p>import java.util.HashMap;</p>
-<p>/**</p>
-<ul>
-<li>
-<p>@author zhoujs</p>
-</li>
-<li>
-<p>@create 2020/9/21 17:44<br>
-**/<br>
-@Service<br>
-public class UserLoginServiceImpl implements UserLoginService {<br>
-@Autowired<br>
-private UserLoginMapper userLoginMapper;</p>
-<p>@Override<br>
-@Cacheable(value = &quot;usercache&quot;)<br>
-public HashMap getByUserName(String userName) {<br>
-System.out.println(&quot;此时没有走缓存&quot;);<br>
-return userLoginMapper.getByUserName(userName);<br>
-}<br>
-}</p>
-</li>
-</ul>
+<pre><code class="language-bash">import java.util.HashMap;
+
+/**
+ * @author zhoujs
+ * @create 2020/9/21 17:44
+ **/
+@Service
+public class UserLoginServiceImpl implements UserLoginService {
+    @Autowired
+    private UserLoginMapper userLoginMapper;
+
+    @Override
+    @Cacheable(value = &quot;usercache&quot;)
+    public HashMap getByUserName(String userName) {
+        System.out.println(&quot;此时没有走缓存&quot;);
+        return userLoginMapper.getByUserName(userName);
+    }
+}
+</code></pre>
 ]]></content>
     </entry>
 </feed>
