@@ -2,19 +2,17 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>springboot项目中添加redis | ZhouJingS的java之旅</title>
+<title>SM3与MD5加密区别 | ZhouJingS的java之旅</title>
 <link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602571317264">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="springboot项目中添加redis | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="SM3与MD5加密区别 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="1、在pom文件中添加依赖
-&lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;art..." />
+    <meta name="description" content="1
+" />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -77,81 +75,28 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              springboot项目中添加redis
+              SM3与MD5加密区别
             </h2>
             <div class="post-info">
               <span>
-                2020-10-12
+                2020-10-13
               </span>
               <span>
-                2 min read
+                1 min read
               </span>
               
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <h2 id="1-在pom文件中添加依赖">1、在pom文件中添加依赖</h2>
-<pre><code class="language-bash">&lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-</code></pre>
-<h2 id="2-配置reids">2、配置reids</h2>
-<pre><code class="language-bash">spring:
-  redis:
-    host: 127.0.0.1
-    port: 6379
-</code></pre>
-<h2 id="3-添加redis配置类">3、添加redis配置类</h2>
-<pre><code class="language-bash">package com.zhoujs.redis.config;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
-import java.net.UnknownHostException;
-/**
- * @author zhoujs
- * @create 2020/9/21 17:39
- **/
-@Configuration
-public class RedisConfig {
-    @Bean
-    public RedisTemplate&lt;String, Object&gt; redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
-        RedisTemplate&lt;String, Object&gt; template = new RedisTemplate();
-        template.setConnectionFactory(redisConnectionFactory);
-        Jackson2JsonRedisSerializer Jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        ObjectMapper om  = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
-        Jackson2JsonRedisSerializer.setObjectMapper(om);
-        //String序列化
-        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-        //key采用String的序列化方式
-        template.setKeySerializer(stringRedisSerializer);
-        template.setHashKeySerializer(stringRedisSerializer);
-        template.setValueSerializer(Jackson2JsonRedisSerializer);
-        template.setHashValueSerializer(Jackson2JsonRedisSerializer);
-        template.afterPropertiesSet();
-        return template;
-    }
-}
-</code></pre>
+                <h2 id="1">1</h2>
 
               </div>
               <div class="toc-container">
                 <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#1-%E5%9C%A8pom%E6%96%87%E4%BB%B6%E4%B8%AD%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96">1、在pom文件中添加依赖</a></li>
-<li><a href="#2-%E9%85%8D%E7%BD%AEreids">2、配置reids</a></li>
-<li><a href="#3-%E6%B7%BB%E5%8A%A0redis%E9%85%8D%E7%BD%AE%E7%B1%BB">3、添加redis配置类</a></li>
+<li><a href="#1">1</a></li>
 </ul>
 </li>
 </ul>
@@ -161,6 +106,15 @@ public class RedisConfig {
           </article>
         </div>
 
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://zhoujings.github.io/post/test/">
+              <h3 class="post-title">
+                springboot项目中添加redis
+              </h3>
+            </a>
+          </div>
         
 
         
