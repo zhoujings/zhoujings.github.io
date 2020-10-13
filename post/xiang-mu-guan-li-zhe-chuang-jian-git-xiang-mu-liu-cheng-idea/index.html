@@ -2,20 +2,22 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>IDEA push 代码被拒绝解决方案 | ZhouJingS的java之旅</title>
+<title>项目管理者创建git项目流程（IDEA） | ZhouJingS的java之旅</title>
 <link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602584570776">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="IDEA push 代码被拒绝解决方案 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="项目管理者创建git项目流程（IDEA） | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="步骤1
-在文件夹中打开git命令框
-步骤2
-执行git pull origin master --allow-unrelated-histories 命令
-..." />
+    <meta name="description" content="1、搭建项目
+构建好自己的JAVA项目。
+2、添加.gitignore文件
+添加git需要忽略的文件名称 具体内容根据实际情况填写。
+
+3、创建本地仓库
+IDEA工具栏上点击 VCS —&gt;import into Vsersion Co..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -78,32 +80,54 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              IDEA push 代码被拒绝解决方案
+              项目管理者创建git项目流程（IDEA）
             </h2>
             <div class="post-info">
               <span>
                 2020-10-13
               </span>
               <span>
-                1 min read
+                2 min read
               </span>
               
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <h2 id="步骤1">步骤1</h2>
-<p>在文件夹中打开git命令框</p>
-<h2 id="步骤2">步骤2</h2>
-<p>执行git pull origin master --allow-unrelated-histories 命令</p>
+                <h2 id="1-搭建项目">1、搭建项目</h2>
+<p>构建好自己的JAVA项目。</p>
+<h2 id="2-添加gitignore文件">2、添加.gitignore文件</h2>
+<p>添加git需要忽略的文件名称 具体内容根据实际情况填写。<br>
+<img src="https://zhoujings.github.io/post-images/1602583593353.png" alt="" loading="lazy"></p>
+<h2 id="3-创建本地仓库">3、创建本地仓库</h2>
+<p>IDEA工具栏上点击 VCS —&gt;import into Vsersion Control —&gt;create Git Repository...<br>
+<img src="https://zhoujings.github.io/post-images/1602583856141.jpg" alt="" loading="lazy"></p>
+<h2 id="4-创建远程私有仓库">4、创建远程私有仓库</h2>
+<p>因为我们的项目肯定是公司私有的，所以必须创建为私有项目。<br>
+码云还是github或者是公司自己搭建的。</p>
+<h2 id="5-dev分支">5、dev分支</h2>
+<p>创建dev开发分支，名称自己定。不要再master分支上开发。</p>
+<h2 id="6-提交代码">6、提交代码</h2>
+<p>主分支与开发分支的代码 commit到本地仓库然后push到远程仓库。</p>
+<h2 id="7-拉取开发人员">7、拉取开发人员</h2>
+<p>将小组开发人员拉取到git项目中，因为项目是私有的别人没办法访问。</p>
+<h2 id="8-设置master分支为保护分支">8、设置master分支为保护分支</h2>
+<p>将master分支设置为保护分支，只有管理员才有权限对master分支进行操作合并。</p>
+<p>以上没有截图是因为每个公司用的不一样，具体操作根据自己所使用的git托管平台而定。</p>
 
               </div>
               <div class="toc-container">
                 <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#%E6%AD%A5%E9%AA%A41">步骤1</a></li>
-<li><a href="#%E6%AD%A5%E9%AA%A42">步骤2</a></li>
+<li><a href="#1-%E6%90%AD%E5%BB%BA%E9%A1%B9%E7%9B%AE">1、搭建项目</a></li>
+<li><a href="#2-%E6%B7%BB%E5%8A%A0gitignore%E6%96%87%E4%BB%B6">2、添加.gitignore文件</a></li>
+<li><a href="#3-%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93">3、创建本地仓库</a></li>
+<li><a href="#4-%E5%88%9B%E5%BB%BA%E8%BF%9C%E7%A8%8B%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93">4、创建远程私有仓库</a></li>
+<li><a href="#5-dev%E5%88%86%E6%94%AF">5、dev分支</a></li>
+<li><a href="#6-%E6%8F%90%E4%BA%A4%E4%BB%A3%E7%A0%81">6、提交代码</a></li>
+<li><a href="#7-%E6%8B%89%E5%8F%96%E5%BC%80%E5%8F%91%E4%BA%BA%E5%91%98">7、拉取开发人员</a></li>
+<li><a href="#8-%E8%AE%BE%E7%BD%AEmaster%E5%88%86%E6%94%AF%E4%B8%BA%E4%BF%9D%E6%8A%A4%E5%88%86%E6%94%AF">8、设置master分支为保护分支</a></li>
 </ul>
 </li>
 </ul>
@@ -116,9 +140,9 @@
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://zhoujings.github.io/post/test/">
+            <a href="https://zhoujings.github.io/post/sm3-yu-md5-jia-mi-qu-bie/">
               <h3 class="post-title">
-                springboot项目中添加redis
+                IDEA push 代码被拒绝解决方案
               </h3>
             </a>
           </div>
