@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-13T12:17:10.571Z</updated>
+    <updated>2020-10-13T12:19:47.273Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -17,17 +17,16 @@
         </link>
         <updated>2020-10-13T12:08:15.000Z</updated>
         <content type="html"><![CDATA[<h2 id="双亲委派机制">双亲委派机制</h2>
-<p>如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把请求委托给父加载器去完成，依次向上，因此，所有的类加载请求最终都应该被传递到顶层的启动类加载器（Bootstrap ClassLoader)中，只有当父加载器在它的搜索范围中没有找到所需的类时，即无法完成该加载，子加载器才会尝试自己去加载该类。<br>
+<p>如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把请求委托给<br>
+父加载器去完成，依次向上，因此，所有的类加载请求最终都应该被传递到顶层的启动类<br>
+加载器 （Bootstrap ClassLoader)中，只有当父加载器在它的搜索范围中没有找到所需的类时，即无法完成该加载，子加载器才会尝试自己去加载该类。<br>
 　　具体流程：<br>
 　　　　1.当AppClassLoader加载一个class时，它不会尝试加载这个类，而是把类加载请求委派给父类加载器ExtClassLoader去完成。<br>
 　　　　2.当父类ExtClassLoader加载到这个.class时，他也不会尝试加载这个类，而是把类加载请求委派给父类加载器BootstrapClassLoader。<br>
 　　　　3.当BootstrapClassLoader加载到这个.class时，它会查找该类是否存在，如果不存在，就往下传递，交给ExtClassLoader，如果ExtClassLoader在自己相应的包中也没找到对应的类，就交给AppClassLoader来加载，如果AppClassLoader也没有，就报ClassNotFoundException();</p>
 <h2 id="沙箱安全机制">沙箱安全机制</h2>
-<p>比如我定义了一个类名为String所在包为java.lang，因为这个类本来是属于jdk的，如果没有沙箱安全<br>
-机制的话，这个类将会污染到我所有的String,但是由于沙箱安全机制，所以就委托顶层的bootstrap加载<br>
-器查找这个类，如果没有的话就委托extsion,extsion没有就到aapclassloader，但是由于String就<br>
-是jdk的源代码，所以在bootstrap那里就加载到了，先找到先使用，所以就使用bootstrap里面的<br>
-String,后面的一概不能使用，这就保证了不被恶意代码污染。</p>
+<p>比如我定义了一个类名为String所在包为java.lang，因为这个类本来是属于jdk的，如果没有<br>
+沙箱安全  机制的话，这个类将会污染到我所有的String,但是由于沙箱安全机制，所以就委托顶层的bootstrap加载器查找这个类，如果没有的话就委托extsion,extsion没有就到aapclassloader，但是由于String就是jdk的源代码，所以在bootstrap那里就加载到了，先找到先使用，所以就使用bootstrap里面的String,后面的一概不能使用，这就保证了不被恶意代码污染。</p>
 ]]></content>
     </entry>
     <entry>
