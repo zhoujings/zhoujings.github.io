@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-14T00:56:41.854Z</updated>
+    <updated>2020-10-14T00:58:09.988Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -33,13 +33,12 @@
         </link>
         <updated>2020-10-13T11:40:00.000Z</updated>
         <content type="html"><![CDATA[<h2 id="1-描述">1、描述</h2>
-<pre><code>    类装载器负责装在.class文件，class文件在文件开头有特定的文件标识（cafe babe）来标
- 识这是一个java的class文件。将.class文件加载到内存中，将其放在运行时数据区（Runtime 
+<pre><code>    类装载器负责装在.class文件，class文件在文件开头有特定的文件标识（cafe babe）  来标 识这是一个java的class文件。将.class文件加载到内存中，将其放在运行时数据区（Runtime   
  Data Area）的&lt;b&gt;方法区&lt;/b&gt;（放类的描述信息）内。然后在堆区创建一个java.lang.Class
  对象，用来封装类在方法区内的数据结构，ClassLoader只负责class文件的加载。至于它是否可运行交给Execution Engine（执行引擎）来决定。
 </code></pre>
 <h2 id="2-分类">2、分类</h2>
-<pre><code>    ClassLoader一共有3+1个。有3个是java自带的。1是你可以自定义的。
+<pre><code>    ClassLoader一共有3+1个。有3个是java自带的。1是你可以自定义的。  
     启动类加载器（Bootstrap ClassLoader）：又叫根加载器，用C++语言编写，加载rt.jar中的类。
 </code></pre>
 <p>（如rt.jar，所有的java.*开头的类均被Bootstrap ClassLoader加载）。<br>
@@ -48,8 +47,7 @@
 以上3个类加载器从上到下子父级依次递减。爷爷 爸爸 儿子</p>
 <h2 id="3-加载顺序">3、加载顺序</h2>
 <figure data-type="image" tabindex="1"><img src="https://zhoujings.github.io/post-images/1602590748191.png" alt="" loading="lazy"></figure>
-<p>例如当我们要使用某个类的时候，顺序是这样的，首先先去启动类加载器bootstrap找，如果有就直接用，<br>
-如果没有就去扩展类加载器找，如果扩展类加载器没有，就去应用程序加载器找，如果还是没有，就报ClassNotFoundException异常。</p>
+<p>例如当我们要使用某个类的时候，顺序是这样的，首先先去启动类加载器bootstrap找，如果有就直接用如果没有就去扩展类加载器找，如果扩展类加载器没有，就去应用程序加载器找，如果还是没有，就报ClassNotFoundException异常。</p>
 ]]></content>
     </entry>
     <entry>
