@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-14T01:32:35.306Z</updated>
+    <updated>2020-10-15T11:43:18.265Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -10,6 +10,32 @@
     <logo>https://zhoujings.github.io/images/avatar.png</logo>
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
+    <entry>
+        <title type="html"><![CDATA[内存溢出与内存泄露]]></title>
+        <id>https://zhoujings.github.io/post/nei-cun-yi-chu-yu-nei-cun-xie-lu/</id>
+        <link href="https://zhoujings.github.io/post/nei-cun-yi-chu-yu-nei-cun-xie-lu/">
+        </link>
+        <updated>2020-10-15T09:19:13.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-内存溢出">1、内存溢出</h2>
+<p>系统无法再分配你所需要的空间。比如一个100毫升的杯子，你往里面加了95毫升的水了。然后你继续往里面加10毫升水，这时水就会溢出杯子。程序中出现这种情况就会造成内存溢出异常。</p>
+<h2 id="2-内存泄露">2、内存泄露</h2>
+<p>是指程序在申请内存后，无法释放已申请的内存空间，一次内存泄露危害可以忽略，但内存泄露堆积后果很严重，无论多少内存,迟早会被占光，就造成了内存溢出的情况。</p>
+<h2 id="3-内存泄露示例">3、内存泄露示例</h2>
+<p>如果长生命周期的对象持有短生命周期的引用，就很可能会出现内存泄露。</p>
+<pre><code class="language-base">public class Simple {
+    Object object;
+    public void method1(){
+        object = new Object();
+    //...其他代码
+        }
+    }
+    ```
+方法执行完后object的对象不会马上被认为是可释放的对象，只有所在类被释放后才会释放，这就是一种内存泄露。
+解决方法：1、可以降低object的作用域，在方法内部声明。2、方法执行完后设置对象没null。
+通过上面2中方法可以及时的对new Object()对象进行GC回收。
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[双亲委派机制与沙箱安全机制]]></title>
         <id>https://zhoujings.github.io/post/shuang-qin-wei-pai-ji-zhi-yu-sha-xiang-an-quan-ji-zhi/</id>
