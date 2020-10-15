@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-15T11:43:18.265Z</updated>
+    <updated>2020-10-15T13:29:42.018Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -10,6 +10,75 @@
     <logo>https://zhoujings.github.io/images/avatar.png</logo>
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
+    <entry>
+        <title type="html"><![CDATA[类的初始化]]></title>
+        <id>https://zhoujings.github.io/post/lei-de-chu-shi-hua/</id>
+        <link href="https://zhoujings.github.io/post/lei-de-chu-shi-hua/">
+        </link>
+        <updated>2020-10-15T13:04:56.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="关于初始化">关于初始化</h2>
+<p>1、new新对象、读取静态变量、设置静态变量，调用静态函数当执行这些操作的时候如果类未被初始化则必须初始化。<br>
+2、使用java.lang.reflect包的方法对类进行发射调用时，如果被调用类未初始化，则需要出初始化。<br>
+3、当初始化一个类的时候，则必须先触发父类初始化。</p>
+<h2 id="不会初始化的情况">不会初始化的情况</h2>
+<p>** 通过子类来引用父类的静态字段，不会导致子类初始化 **</p>
+<pre><code class="language-base">@SpringBootTest
+class ApplicationTests {
+        public static void main(String[] args) {
+            System.out.println(Student.value);
+        }
+}
+class Person{
+    public static int value=123;
+    static{
+        System.out.println(&quot;Person init!&quot;);
+    }
+}
+class Student extends Person{
+    static{
+        System.out.println(&quot;Student init!&quot;);
+    }
+}
+</code></pre>
+<p>上面代码只会打印Person init。子类并未初始化。<br>
+<strong>通过数组定义来引用类，不会触发此类初始化</strong></p>
+<pre><code class="language-base">@SpringBootTest
+class ApplicationTests {
+        public static void main(String[] args) {
+            Student[] stus=new Student[10];
+            ArrayList list  = new ArrayList&lt;Student&gt;();
+        }
+}
+class Person{
+    public static int value=123;
+    static{
+        System.out.println(&quot;Person init!&quot;);
+    }
+}
+class Student extends Person{
+    static{
+        System.out.println(&quot;Student init!&quot;);
+    }
+}
+</code></pre>
+<p>并没有打印静态代码块，类未初始化。<br>
+** 调用类的全局常量不会初始化该类**</p>
+<pre><code class="language-base">@SpringBootTest
+class ApplicationTests {
+        public  static  void main(String[] args) {
+            System.out.println(Student.HELLO_WORLD);
+        }
+}
+class Student{
+     final static String HELLO_WORLD=&quot;hello world&quot;;
+    static{
+        System.out.println(&quot;Student init!&quot;);
+    }
+}
+</code></pre>
+<p>只打印hello world。Student类并未初始化。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[内存溢出与内存泄露]]></title>
         <id>https://zhoujings.github.io/post/nei-cun-yi-chu-yu-nei-cun-xie-lu/</id>
