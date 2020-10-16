@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-15T13:33:09.993Z</updated>
+    <updated>2020-10-16T15:41:00.727Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -10,6 +10,78 @@
     <logo>https://zhoujings.github.io/images/avatar.png</logo>
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
+    <entry>
+        <title type="html"><![CDATA[方法区元空间永久代常量池]]></title>
+        <id>https://zhoujings.github.io/post/fang-fa-qu-yuan-kong-jian-yong-jiu-dai-chang-liang-chi/</id>
+        <link href="https://zhoujings.github.io/post/fang-fa-qu-yuan-kong-jian-yong-jiu-dai-chang-liang-chi/">
+        </link>
+        <updated>2020-10-16T15:25:41.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="方法区">方法区</h2>
+<p>方法区相当于是一个规范一个接口。而永久代与元空间相当于是方法区的实现。</p>
+<p>永久代（PermGen）：hotspot实现 1.7 1.6</p>
+<p>元空间（MetaSpace）：hotspot实现 1.8</p>
+<p>首先，metaspace默认的最大值是整个机器的物理内存大小，所以metaspace不断扩张会导致java程序侵占系统可用内存，最终系统没有可用的内存；而永久区则有固定的默认大小，不会扩张到整个机器的可用内存。当分配的内存耗尽时，两者均会触发full gc，但不同的是永久区在full gc时，以堆内存回收时类似的机制去回收永久区中的类元数据（Class对象），只要是根引用无法到达的对象就可以回收掉，而metaspace判断类元数据是否可以回收，是根据加载这些类元数据的Classloader是否可以回收来判断的，只要Classloader不能回收，通过其加载的类元数据就不会被回收。</p>
+<h2 id="常量池">常量池</h2>
+<p>1.6  - 永久代（方法区）</p>
+<p>1.7、1.8  - 堆</p>
+<p>但是即使是同样在堆中：<br>
+public class StringConstancePool {<br>
+public static void main(String[] args) {<br>
+String str1 = new String(&quot;abc&quot;);<br>
+String str2 = str1.intern();<br>
+System.out.println(str1 == str2);<br>
+}<br>
+}<br>
+以上程序的运行结果仍然是false，这时因为intern生成的str2所引用的字符串内容是在字符串常量池中，而通过new String方法生成的str1，该字符串对象是位于存放对象的Java堆中，二者的地址是不同的。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[java堆内存heap]]></title>
+        <id>https://zhoujings.github.io/post/java-dui-nei-cun-heap/</id>
+        <link href="https://zhoujings.github.io/post/java-dui-nei-cun-heap/">
+        </link>
+        <updated>2020-10-16T15:01:20.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-概念">1、概念</h2>
+<p>堆内存是java虚拟机中重要的组成部分，俗话说 栈管运行 堆管存储。所以我们也知道了堆的作用就是用来存储数据的。我们平时new出来的数据就存在堆中。因为数据会占用内存所以堆内存的优化就很重要。当程序需要申请内存使用的时候，如果堆中内存不足，则会抛出OOM（Out Of Memoy）异常。</p>
+<h2 id="2-内存划分">2、内存划分</h2>
+<p>1、物理内存分为年轻代和老年代。逻辑层面说多了一个非堆内存元空间存储在内存中不受限于JVM本身分配的内存（JDK1.7 1.6及叫永久代，存储在JVM中）。<br>
+2、年轻代又分为Eden（新对象存储区域）和Survivor区。Survivor区由FromSpace和ToSpace组成也叫S0 S1。Eden区占大容量，Survivor两个区占小容量，默认比例是8:1:1<br>
+3、元空间是方法区的一种具体实现，里面存放的是被虚拟机加载的类信息、常量、静态变量、动态生成的类等数据。</p>
+<h2 id="3-堆的垃圾回收方式">3、堆的垃圾回收方式</h2>
+<p>java堆是GC垃圾回收的主要区域。 GC分为两种： Minor GC、Full GC（也叫做Major GC）.</p>
+<h2 id="4-minor-gc简称gc">4、Minor GC(简称GC)</h2>
+<p>Minor GC是发生在新生代中的垃圾收集动作， 所采用的是复制算法。<br>
+GC一般为堆空间某个区发生了垃圾回收，<br>
+新生代（Young）几乎是所有java对象出生的地方。即java对象申请的内存以及存放都是在这个地方。java中的大部分对象通常不会长久的存活， 具有朝生夕死的特点。<br>
+当一个对象被判定为“死亡”的时候， GC就有责任来回收掉这部分对象的内存空间。<br>
+新生代是收集垃圾的频繁区域。</p>
+<h2 id="5-回收过程如下">5、回收过程如下：</h2>
+<p>当对象在 Eden ( 包括一个 Survivor 区域，这里假设是 from 区域 ) 出生后，在经过一次 Minor GC 后，如果对象还存活，并且能够被另外一块 Survivor 区域所容纳(上面已经假设为 from 区域，这里应为 to 区域，即 to 区域有足够的内存空间来存储 Eden 和 from 区域中存活的对象 )，则使用复制算法将这些仍然还存活的对象复制到另外一块 Survivor 区域 ( 即 to 区域 ) 中，然后清理所使用过的 Eden 以及 Survivor 区域 ( 即 from 区域 )，并且将这些对象的年龄设置为1，以后对象在 Survivor 区每熬过一次 Minor GC，就将对象的年龄 + 1，当对象的年龄达到某个值时 ( 默认是 15 岁，可以通过参数 -XX:MaxTenuringThreshold 来设定 )，这些对象就会成为老年代。<br>
+但这也不是一定的，对于一些较大的对象 ( 即需要分配一块较大的连续内存空间 ) 则是直接进入到老年代。</p>
+<h2 id="6-full-gc">6、Full GC</h2>
+<p>Full GC 基本都是整个堆空间及持久代发生了垃圾回收，所采用的是标记-清除算法。<br>
+现实的生活中，老年代的人通常会比新生代的人 “早死”。堆内存中的老年代(Old)不同于这个，老年代里面的对象几乎个个都是在 Survivor 区域中熬过来的，它们是不会那么容易就 “死掉” 了的。因此，Full GC 发生的次数不会有 Minor GC 那么频繁，并且做一次 Full GC 要比进行一次 Minor GC 的时间更长，一般是Minor GC的 10倍以上。<br>
+另外，标记-清除算法收集垃圾的时候会产生许多的内存碎片 ( 即不连续的内存空间 )，此后需要为较大的对象分配内存空间时，若无法找到足够的连续的内存空间，就会提前触发一次 GC 的收集动作</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[值传递]]></title>
+        <id>https://zhoujings.github.io/post/zhi-chuan-di/</id>
+        <link href="https://zhoujings.github.io/post/zhi-chuan-di/">
+        </link>
+        <updated>2020-10-16T14:27:43.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-概念">1、概念</h2>
+<p>程序员们普遍认为，当传的值是基础类型的时候，就是值传递。而当传递的是引用类型的时候，就是引用传递。其实这2种传递都是值传递，只是第二种传递把引用当成了一个值传递了。<br>
+所以当传递的是基础类型的时候，这是后就相当于是传递的复印件。并不会改变原始数据。<br>
+当传递的值是引用类型的时候，这时候复印的就是引用地址了，因为2个引用指向的是堆中同一块区域，所以任意一方改变值，都会造成数据修改。</p>
+<h2 id="2-string类型传递">2、String类型传递</h2>
+<p>但是当引用传递为String类型的时候，这就不一样了。<br>
+因为String类型存在方法区的常量池中。当要修改值的时候，会判断常量池中是否存在修改的值。如果没有则创建对应的值，并指向该值。但是原来数据还是指向的原始值。所以数据未改变。</p>
+<h2 id="2-总结">2、总结</h2>
+<p>基础类型传递不会改变原始数据。<br>
+引用类型传递会改变原始数据。String类型除外。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[类的初始化]]></title>
         <id>https://zhoujings.github.io/post/lei-de-chu-shi-hua/</id>
@@ -509,18 +581,6 @@ public class RedisConfig {
     }
 }
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[IDEA push 代码被拒绝解决方案]]></title>
-        <id>https://zhoujings.github.io/post/sm3-yu-md5-jia-mi-qu-bie/</id>
-        <link href="https://zhoujings.github.io/post/sm3-yu-md5-jia-mi-qu-bie/">
-        </link>
-        <updated>2020-08-12T06:41:17.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="步骤1">步骤1</h2>
-<p>在文件夹中打开git命令框</p>
-<h2 id="步骤2">步骤2</h2>
-<p>执行git pull origin master --allow-unrelated-histories 命令</p>
 ]]></content>
     </entry>
 </feed>

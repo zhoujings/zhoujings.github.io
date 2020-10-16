@@ -1,0 +1,198 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>java堆内存heap | ZhouJingS的java之旅</title>
+<link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602862851403">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="java堆内存heap | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="1、概念
+堆内存是java虚拟机中重要的组成部分，俗话说 栈管运行 堆管存储。所以我们也知道了堆的作用就是用来存储数据的。我们平时new出来的数据就存在堆中。因为数据会占用内存所以堆内存的优化就很重要。当程序需要申请内存使用的时候，如果堆中..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://zhoujings.github.io">
+  <img class="avatar" src="https://zhoujings.github.io/images/avatar.png?v=1602862851403" alt="">
+  </a>
+  <h1 class="site-title">
+    ZhouJingS的java之旅
+  </h1>
+  <p class="site-description">
+    学无止境
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              java堆内存heap
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-10-16
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h2 id="1-概念">1、概念</h2>
+<p>堆内存是java虚拟机中重要的组成部分，俗话说 栈管运行 堆管存储。所以我们也知道了堆的作用就是用来存储数据的。我们平时new出来的数据就存在堆中。因为数据会占用内存所以堆内存的优化就很重要。当程序需要申请内存使用的时候，如果堆中内存不足，则会抛出OOM（Out Of Memoy）异常。</p>
+<h2 id="2-内存划分">2、内存划分</h2>
+<p>1、物理内存分为年轻代和老年代。逻辑层面说多了一个非堆内存元空间存储在内存中不受限于JVM本身分配的内存（JDK1.7 1.6及叫永久代，存储在JVM中）。<br>
+2、年轻代又分为Eden（新对象存储区域）和Survivor区。Survivor区由FromSpace和ToSpace组成也叫S0 S1。Eden区占大容量，Survivor两个区占小容量，默认比例是8:1:1<br>
+3、元空间是方法区的一种具体实现，里面存放的是被虚拟机加载的类信息、常量、静态变量、动态生成的类等数据。</p>
+<h2 id="3-堆的垃圾回收方式">3、堆的垃圾回收方式</h2>
+<p>java堆是GC垃圾回收的主要区域。 GC分为两种： Minor GC、Full GC（也叫做Major GC）.</p>
+<h2 id="4-minor-gc简称gc">4、Minor GC(简称GC)</h2>
+<p>Minor GC是发生在新生代中的垃圾收集动作， 所采用的是复制算法。<br>
+GC一般为堆空间某个区发生了垃圾回收，<br>
+新生代（Young）几乎是所有java对象出生的地方。即java对象申请的内存以及存放都是在这个地方。java中的大部分对象通常不会长久的存活， 具有朝生夕死的特点。<br>
+当一个对象被判定为“死亡”的时候， GC就有责任来回收掉这部分对象的内存空间。<br>
+新生代是收集垃圾的频繁区域。</p>
+<h2 id="5-回收过程如下">5、回收过程如下：</h2>
+<p>当对象在 Eden ( 包括一个 Survivor 区域，这里假设是 from 区域 ) 出生后，在经过一次 Minor GC 后，如果对象还存活，并且能够被另外一块 Survivor 区域所容纳(上面已经假设为 from 区域，这里应为 to 区域，即 to 区域有足够的内存空间来存储 Eden 和 from 区域中存活的对象 )，则使用复制算法将这些仍然还存活的对象复制到另外一块 Survivor 区域 ( 即 to 区域 ) 中，然后清理所使用过的 Eden 以及 Survivor 区域 ( 即 from 区域 )，并且将这些对象的年龄设置为1，以后对象在 Survivor 区每熬过一次 Minor GC，就将对象的年龄 + 1，当对象的年龄达到某个值时 ( 默认是 15 岁，可以通过参数 -XX:MaxTenuringThreshold 来设定 )，这些对象就会成为老年代。<br>
+但这也不是一定的，对于一些较大的对象 ( 即需要分配一块较大的连续内存空间 ) 则是直接进入到老年代。</p>
+<h2 id="6-full-gc">6、Full GC</h2>
+<p>Full GC 基本都是整个堆空间及持久代发生了垃圾回收，所采用的是标记-清除算法。<br>
+现实的生活中，老年代的人通常会比新生代的人 “早死”。堆内存中的老年代(Old)不同于这个，老年代里面的对象几乎个个都是在 Survivor 区域中熬过来的，它们是不会那么容易就 “死掉” 了的。因此，Full GC 发生的次数不会有 Minor GC 那么频繁，并且做一次 Full GC 要比进行一次 Minor GC 的时间更长，一般是Minor GC的 10倍以上。<br>
+另外，标记-清除算法收集垃圾的时候会产生许多的内存碎片 ( 即不连续的内存空间 )，此后需要为较大的对象分配内存空间时，若无法找到足够的连续的内存空间，就会提前触发一次 GC 的收集动作</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E6%A6%82%E5%BF%B5">1、概念</a></li>
+<li><a href="#2-%E5%86%85%E5%AD%98%E5%88%92%E5%88%86">2、内存划分</a></li>
+<li><a href="#3-%E5%A0%86%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%96%B9%E5%BC%8F">3、堆的垃圾回收方式</a></li>
+<li><a href="#4-minor-gc%E7%AE%80%E7%A7%B0gc">4、Minor GC(简称GC)</a></li>
+<li><a href="#5-%E5%9B%9E%E6%94%B6%E8%BF%87%E7%A8%8B%E5%A6%82%E4%B8%8B">5、回收过程如下：</a></li>
+<li><a href="#6-full-gc">6、Full GC</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://zhoujings.github.io/post/zhi-chuan-di/">
+              <h3 class="post-title">
+                值传递
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://zhoujings.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
