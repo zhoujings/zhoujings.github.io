@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>垃圾收集算法 | ZhouJingS的java之旅</title>
-<link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602936154222">
+<link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602948398416">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="垃圾收集算法 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
@@ -11,8 +11,10 @@
 
 
 
-    <meta name="description" content="1、
-" />
+    <meta name="description" content="1、引用计数法
+给对象添加一个应用计数器，每当应用该对象的时候，计数器就加1，当引用失效时就减1。当计数器为0时表示不再被使用。但是很难解决循环引用的问题。基本没有使用。了解就行了。
+2、复制算法
+复制算法将可用内存分为大小相等的两块内存区..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -22,13 +24,13 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://zhoujings.github.io">
-  <img class="avatar" src="https://zhoujings.github.io/images/avatar.png?v=1602936154222" alt="">
+  <img class="avatar" src="https://zhoujings.github.io/images/avatar.png?v=1602948398416" alt="">
   </a>
   <h1 class="site-title">
     ZhouJingS的java之旅
   </h1>
   <p class="site-description">
-    学无止境
+    学习是孤独的，但孤独是我最好的朋友。
   </p>
   <div class="menu-container">
     
@@ -82,21 +84,31 @@
                 2020-10-17
               </span>
               <span>
-                1 min read
+                2 min read
               </span>
               
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <h2 id="1">1、</h2>
+                <h2 id="1-引用计数法">1、引用计数法</h2>
+<p>给对象添加一个应用计数器，每当应用该对象的时候，计数器就加1，当引用失效时就减1。当计数器为0时表示不再被使用。但是很难解决循环引用的问题。基本没有使用。了解就行了。</p>
+<h2 id="2-复制算法">2、复制算法</h2>
+<p>复制算法将可用内存分为大小相等的两块内存区域，每次只使用其中一块。当调用复制算法的时候，就会把当前存活的对象复制到另一块区域。然后把当前区域清理掉。这种算法效率高，且不会存在内存碎片。复制算法要想使用，最起码对象的存活率要非常低才行，而且最重要的是，我们必须要克服50%内存的浪费。</p>
+<h2 id="3-标记-清除算法">3、标记-清除算法</h2>
+<p>这种算法就是把当前内存中的不可用对象会挨个标记一遍。然后执行清除操作。这种算法不会浪费空间，但是效率不如复制算法。且会存在内存碎片的问题。</p>
+<h2 id="4-标记-整理算法">4、标记-整理算法</h2>
+<p>标记整理算法就是在标记清楚算法的基础上加上了整理这一个步骤。把以前内存不连续的对象，整理在一起。就解决了内存碎片的问题。但是相对来说效率就更低了一点。</p>
 
               </div>
               <div class="toc-container">
                 <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#1">1、</a></li>
+<li><a href="#1-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E6%B3%95">1、引用计数法</a></li>
+<li><a href="#2-%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95">2、复制算法</a></li>
+<li><a href="#3-%E6%A0%87%E8%AE%B0-%E6%B8%85%E9%99%A4%E7%AE%97%E6%B3%95">3、标记-清除算法</a></li>
+<li><a href="#4-%E6%A0%87%E8%AE%B0-%E6%95%B4%E7%90%86%E7%AE%97%E6%B3%95">4、标记-整理算法</a></li>
 </ul>
 </li>
 </ul>

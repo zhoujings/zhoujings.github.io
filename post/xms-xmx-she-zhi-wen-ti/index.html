@@ -2,18 +2,19 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>值传递 | ZhouJingS的java之旅</title>
+<title>XMS XMX设置问题 | ZhouJingS的java之旅</title>
 <link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1602948398416">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="值传递 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="XMS XMX设置问题 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="1、概念
-程序员们普遍认为，当传的值是基础类型的时候，就是值传递。而当传递的是引用类型的时候，就是引用传递。其实这2种传递都是值传递，只是第二种传递把引用当成了一个值传递了。
-所以当传递的是基础类型的时候，这是后就相当于是传递的复印件。并不..." />
+    <meta name="description" content="-Xms：堆内存的最小内存值，默认为物理内存的1/64
+-Xmx：堆内存的最大内存值，默认为物理内存的1/4
+堆内存存在动态扩容收缩机制，Xms过小会频繁触发GC操作。GC操作频繁就引起了性能问题。
+面对上面的问题，为了避免在生产环境由于h..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -76,43 +77,28 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              值传递
+              XMS XMX设置问题
             </h2>
             <div class="post-info">
               <span>
-                2020-10-16
+                2020-10-17
               </span>
               <span>
-                2 min read
+                1 min read
               </span>
               
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <h2 id="1-概念">1、概念</h2>
-<p>程序员们普遍认为，当传的值是基础类型的时候，就是值传递。而当传递的是引用类型的时候，就是引用传递。其实这2种传递都是值传递，只是第二种传递把引用当成了一个值传递了。<br>
-所以当传递的是基础类型的时候，这是后就相当于是传递的复印件。并不会改变原始数据。<br>
-当传递的值是引用类型的时候，这时候复印的就是引用地址了，因为2个引用指向的是堆中同一块区域，所以任意一方改变值，都会造成数据修改。</p>
-<h2 id="2-string类型传递">2、String类型传递</h2>
-<p>但是当引用传递为String类型的时候，这就不一样了。<br>
-因为String类型存在方法区的常量池中。当要修改值的时候，会判断常量池中是否存在修改的值。如果没有则创建对应的值，并指向该值。但是原来数据还是指向的原始值。所以数据未改变。</p>
-<h2 id="2-总结">2、总结</h2>
-<p>基础类型传递不会改变原始数据。<br>
-引用类型传递会改变原始数据。String类型除外。</p>
+                <p>-Xms：堆内存的最小内存值，默认为物理内存的1/64<br>
+-Xmx：堆内存的最大内存值，默认为物理内存的1/4<br>
+堆内存存在动态扩容收缩机制，Xms过小会频繁触发GC操作。GC操作频繁就引起了性能问题。</p>
+<p>面对上面的问题，为了避免在生产环境由于heap内存扩大或缩小导致应用停顿，降低延迟，同时避免每次垃圾回收完成后JVM重新分配内存。所以，-Xms一般一开始就设置跟-Xmx一样发小。</p>
 
               </div>
               <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#1-%E6%A6%82%E5%BF%B5">1、概念</a></li>
-<li><a href="#2-string%E7%B1%BB%E5%9E%8B%E4%BC%A0%E9%80%92">2、String类型传递</a></li>
-<li><a href="#2-%E6%80%BB%E7%BB%93">2、总结</a></li>
-</ul>
-</li>
-</ul>
-
+                
               </div>
             </div>
           </article>
@@ -121,9 +107,9 @@
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://zhoujings.github.io/post/lei-de-chu-shi-hua/">
+            <a href="https://zhoujings.github.io/post/la-ji-shou-ji-suan-fa/">
               <h3 class="post-title">
-                类的初始化
+                垃圾收集算法
               </h3>
             </a>
           </div>

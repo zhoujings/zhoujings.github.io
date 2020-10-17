@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-17T12:26:19.910Z</updated>
+    <updated>2020-10-17T15:28:42.079Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -10,6 +10,177 @@
     <logo>https://zhoujings.github.io/images/avatar.png</logo>
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
+    <entry>
+        <title type="html"><![CDATA[HashMap]]></title>
+        <id>https://zhoujings.github.io/post/hashmap/</id>
+        <link href="https://zhoujings.github.io/post/hashmap/">
+        </link>
+        <updated>2020-10-17T15:20:56.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="putval方法执行过程">putVal方法执行过程</h2>
+<p><img src="https://zhoujings.github.io/post-images/1602948133131.png" alt="" loading="lazy"><br>
+①.判断键值对数组table[i]是否为空或为null，否则执行resize()进行扩容；</p>
+<p>②.根据键值key计算hash值得到插入的数组索引i，如果table[i]==null，直接新建节点添加，转向⑥，如果table[i]不为空，转向③；</p>
+<p>③.判断table[i]的首个元素是否和key一样，如果相同直接覆盖value，否则转向④，这里的相同指的是hashCode以及equals；</p>
+<p>④.判断table[i] 是否为treeNode，即table[i] 是否是红黑树，如果是红黑树，则直接在树中插入键值对，否则转向⑤；</p>
+<p>⑤.遍历table[i]，判断链表长度是否大于8，大于8的话把链表转换为红黑树，在红黑树中执行插入操作，否则进行链表的插入操作；遍历过程中若发现key已经存在直接覆盖value即可；</p>
+<p>⑥.插入成功后，判断实际存在的键值对数量size是否超多了最大容量threshold，如果超过，进行扩容。</p>
+<h2 id="源码">源码</h2>
+<pre><code class="language-java">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+                   boolean evict) {
+    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;
+    // 步骤①：tab为空则创建 
+    // table未初始化或者长度为0，进行扩容
+    if ((tab = table) == null || (n = tab.length) == 0)
+        n = (tab = resize()).length;
+    // 步骤②：计算index，并对null做处理  
+    // (n - 1) &amp; hash 确定元素存放在哪个桶中，桶为空，新生成结点放入桶中(此时，这个结点是放在数组中)
+    if ((p = tab[i = (n - 1) &amp; hash]) == null)
+        tab[i] = newNode(hash, key, value, null);
+    // 桶中已经存在元素
+    else {
+        Node&lt;K,V&gt; e; K k;
+        // 步骤③：节点key存在，直接覆盖value 
+        // 比较桶中第一个元素(数组中的结点)的hash值相等，key相等
+        if (p.hash == hash &amp;&amp;
+            ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
+                // 将第一个元素赋值给e，用e来记录
+                e = p;
+        // 步骤④：判断该链为红黑树 
+        // hash值不相等，即key不相等；为红黑树结点
+        else if (p instanceof TreeNode)
+            // 放入树中
+            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
+        // 步骤⑤：该链为链表 
+        // 为链表结点
+        else {
+            // 在链表最末插入结点
+            for (int binCount = 0; ; ++binCount) {
+                // 到达链表的尾部
+                if ((e = p.next) == null) {
+                    // 在尾部插入新结点
+                    p.next = newNode(hash, key, value, null);
+                    // 结点数量达到阈值，转化为红黑树
+                    if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
+                        treeifyBin(tab, hash);
+                    // 跳出循环
+                    break;
+                }
+                // 判断链表中结点的key值与插入的元素的key值是否相等
+                if (e.hash == hash &amp;&amp;
+                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
+                    // 相等，跳出循环
+                    break;
+                // 用于遍历桶中的链表，与前面的e = p.next组合，可以遍历链表
+                p = e;
+            }
+        }
+        // 表示在桶中找到key值、hash值与插入元素相等的结点
+        if (e != null) { 
+            // 记录e的value
+            V oldValue = e.value;
+            // onlyIfAbsent为false或者旧值为null
+            if (!onlyIfAbsent || oldValue == null)
+                //用新值替换旧值
+                e.value = value;
+            // 访问后回调
+            afterNodeAccess(e);
+            // 返回旧值
+            return oldValue;
+        }
+    }
+    // 结构性修改
+    ++modCount;
+    // 步骤⑥：超过最大容量 就扩容 
+    // 实际大小大于阈值则扩容
+    if (++size &gt; threshold)
+        resize();
+    // 插入后回调
+    afterNodeInsertion(evict);
+    return null;
+}
+</code></pre>
+<h2 id="hashmap的数据存储实现原理">HashMap的数据存储实现原理</h2>
+<p>流程：</p>
+<ol>
+<li>
+<p>根据key计算得到key.hash = (h = k.hashCode()) ^ (h &gt;&gt;&gt; 16)；</p>
+</li>
+<li>
+<p>根据key.hash计算得到桶数组的索引index = key.hash &amp; (table.length - 1)，这样就找到该key的存放位置了：</p>
+</li>
+</ol>
+<p>① 如果该位置没有数据，用该数据新生成一个节点保存新数据，返回null；</p>
+<p>② 如果该位置有数据是一个红黑树，那么执行相应的插入 / 更新操作；</p>
+<p>③ 如果该位置有数据是一个链表，分两种情况一是该链表没有这个节点，另一个是该链表上有这个节点，注意这里判断的依据是key.hash是否一样：</p>
+<p>如果该链表没有这个节点，那么采用尾插法新增节点保存新数据，返回null；如果该链表已经有这个节点了，那么找到该节点并更新新数据，返回老数据。</p>
+<p>注意：</p>
+<p>HashMap的put会返回key的上一次保存的数据，比如：</p>
+<p>HashMap&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();<br>
+System.out.println(map.put(&quot;a&quot;, &quot;A&quot;)); // 打印null<br>
+System.out.println(map.put(&quot;a&quot;, &quot;AA&quot;)); // 打印A<br>
+System.out.println(map.put(&quot;a&quot;, &quot;AB&quot;)); // 打印AA</p>
+<h2 id="getnode方法">getNode方法</h2>
+<pre><code class="language-java">final Node&lt;K,V&gt; getNode(int hash, Object key) {
+    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;
+    // table已经初始化，长度大于0，根据hash寻找table中的项也不为空
+    if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp;
+        (first = tab[(n - 1) &amp; hash]) != null) {
+        // 桶中第一项(数组元素)相等
+        if (first.hash == hash &amp;&amp; // always check first node
+            ((k = first.key) == key || (key != null &amp;&amp; key.equals(k))))
+            return first;
+        // 桶中不止一个结点
+        if ((e = first.next) != null) {
+            // 为红黑树结点
+            if (first instanceof TreeNode)
+                // 在红黑树中查找
+                return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);
+            // 否则，在链表中查找
+            do {
+                if (e.hash == hash &amp;&amp;
+                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
+                    return e;
+            } while ((e = e.next) != null);
+        }
+    }
+    return null;
+}
+
+
+
+本文参考链接：https://www.cnblogs.com/doufuyu/p/10874689.html
+
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[XMS XMX设置问题]]></title>
+        <id>https://zhoujings.github.io/post/xms-xmx-she-zhi-wen-ti/</id>
+        <link href="https://zhoujings.github.io/post/xms-xmx-she-zhi-wen-ti/">
+        </link>
+        <updated>2020-10-17T12:57:59.000Z</updated>
+        <content type="html"><![CDATA[<p>-Xms：堆内存的最小内存值，默认为物理内存的1/64<br>
+-Xmx：堆内存的最大内存值，默认为物理内存的1/4<br>
+堆内存存在动态扩容收缩机制，Xms过小会频繁触发GC操作。GC操作频繁就引起了性能问题。</p>
+<p>面对上面的问题，为了避免在生产环境由于heap内存扩大或缩小导致应用停顿，降低延迟，同时避免每次垃圾回收完成后JVM重新分配内存。所以，-Xms一般一开始就设置跟-Xmx一样发小。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[垃圾收集算法]]></title>
+        <id>https://zhoujings.github.io/post/la-ji-shou-ji-suan-fa/</id>
+        <link href="https://zhoujings.github.io/post/la-ji-shou-ji-suan-fa/">
+        </link>
+        <updated>2020-10-17T11:58:22.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-引用计数法">1、引用计数法</h2>
+<p>给对象添加一个应用计数器，每当应用该对象的时候，计数器就加1，当引用失效时就减1。当计数器为0时表示不再被使用。但是很难解决循环引用的问题。基本没有使用。了解就行了。</p>
+<h2 id="2-复制算法">2、复制算法</h2>
+<p>复制算法将可用内存分为大小相等的两块内存区域，每次只使用其中一块。当调用复制算法的时候，就会把当前存活的对象复制到另一块区域。然后把当前区域清理掉。这种算法效率高，且不会存在内存碎片。复制算法要想使用，最起码对象的存活率要非常低才行，而且最重要的是，我们必须要克服50%内存的浪费。</p>
+<h2 id="3-标记-清除算法">3、标记-清除算法</h2>
+<p>这种算法就是把当前内存中的不可用对象会挨个标记一遍。然后执行清除操作。这种算法不会浪费空间，但是效率不如复制算法。且会存在内存碎片的问题。</p>
+<h2 id="4-标记-整理算法">4、标记-整理算法</h2>
+<p>标记整理算法就是在标记清楚算法的基础上加上了整理这一个步骤。把以前内存不连续的对象，整理在一起。就解决了内存碎片的问题。但是相对来说效率就更低了一点。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[方法区元空间永久代常量池]]></title>
         <id>https://zhoujings.github.io/post/fang-fa-qu-yuan-kong-jian-yong-jiu-dai-chang-liang-chi/</id>
@@ -215,372 +386,6 @@ class Student{
 <h2 id="3-加载顺序">3、加载顺序</h2>
 <figure data-type="image" tabindex="1"><img src="https://zhoujings.github.io/post-images/1602590748191.png" alt="" loading="lazy"></figure>
 <p>例如当我们要使用某个类的时候，顺序是这样的，首先先去启动类加载器bootstrap找，如果有就直接用如果没有就去扩展类加载器找，如果扩展类加载器没有，就去应用程序加载器找，如果还是没有，就报ClassNotFoundException异常。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[项目管理者创建git项目流程（IDEA）]]></title>
-        <id>https://zhoujings.github.io/post/xiang-mu-guan-li-zhe-chuang-jian-git-xiang-mu-liu-cheng-idea/</id>
-        <link href="https://zhoujings.github.io/post/xiang-mu-guan-li-zhe-chuang-jian-git-xiang-mu-liu-cheng-idea/">
-        </link>
-        <updated>2020-10-13T10:00:51.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-搭建项目">1、搭建项目</h2>
-<p>构建好自己的JAVA项目。</p>
-<h2 id="2-添加gitignore文件">2、添加.gitignore文件</h2>
-<p>添加git需要忽略的文件名称 具体内容根据实际情况填写。<br>
-<img src="https://zhoujings.github.io/post-images/1602583593353.png" alt="" loading="lazy"></p>
-<h2 id="3-创建本地仓库">3、创建本地仓库</h2>
-<p>IDEA工具栏上点击 VCS —&gt;import into Vsersion Control —&gt;create Git Repository...<br>
-<img src="https://zhoujings.github.io/post-images/1602583856141.jpg" alt="" loading="lazy"></p>
-<h2 id="4-创建远程私有仓库">4、创建远程私有仓库</h2>
-<p>因为我们的项目肯定是公司私有的，所以必须创建为私有项目。<br>
-码云还是github或者是公司自己搭建的。</p>
-<h2 id="5-dev分支">5、dev分支</h2>
-<p>创建dev开发分支，名称自己定。不要再master分支上开发。</p>
-<h2 id="6-提交代码">6、提交代码</h2>
-<p>主分支与开发分支的代码 commit到本地仓库然后push到远程仓库。</p>
-<h2 id="7-拉取开发人员">7、拉取开发人员</h2>
-<p>将小组开发人员拉取到git项目中，因为项目是私有的别人没办法访问。</p>
-<h2 id="8-设置master分支为保护分支">8、设置master分支为保护分支</h2>
-<p>将master分支设置为保护分支，只有管理员才有权限对master分支进行操作合并。</p>
-<p>以上没有截图是因为每个公司用的不一样，具体操作根据自己所使用的git托管平台而定。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[常用Git命令清单]]></title>
-        <id>https://zhoujings.github.io/post/chang-yong-git-ming-ling-qing-dan/</id>
-        <link href="https://zhoujings.github.io/post/chang-yong-git-ming-ling-qing-dan/">
-        </link>
-        <updated>2020-08-24T01:26:31.000Z</updated>
-        <content type="html"><![CDATA[<h1 id="常用-git-命令清单">常用 Git 命令清单</h1>
-<p><img src="https://zhoujings.github.io/post-images/1602638893920.png" alt="" loading="lazy"><br>
-常用 Git 命令清单。几个专用名词的译名如下。</p>
-<ul>
-<li>Workspace：工作区</li>
-<li>Index / Stage：暂存区</li>
-<li>Repository：仓库区（或本地仓库）</li>
-<li>Remote：远程仓库</li>
-</ul>
-<h2 id="一-新建代码库">一、新建代码库</h2>
-<pre><code class="language-bash"># 在当前目录新建一个Git代码库
-$ git init
-
-# 新建一个目录，将其初始化为Git代码库
-$ git init [project-name]
-
-# 下载一个项目和它的整个代码历史
-$ git clone [url]
-</code></pre>
-<h2 id="二-配置">二、配置</h2>
-<p>Git的设置文件为<code>.gitconfig</code>，它可以在用户主目录下（全局配置），也可以在项目目录下（项目配置）。</p>
-<pre><code class="language-bash"># 显示当前的Git配置
-$ git config --list
-
-# 编辑Git配置文件
-$ git config -e [--global]
-
-# 设置提交代码时的用户信息
-$ git config [--global] user.name &quot;[name]&quot;
-$ git config [--global] user.email &quot;[email address]&quot;
-</code></pre>
-<h2 id="三-增加删除文件">三、增加/删除文件</h2>
-<pre><code class="language-bash"># 添加指定文件到暂存区
-$ git add [file1] [file2] ...
-
-# 添加指定目录到暂存区，包括子目录
-$ git add [dir]
-
-# 添加当前目录的所有文件到暂存区
-$ git add .
-
-# 添加每个变化前，都会要求确认
-# 对于同一个文件的多处变化，可以实现分次提交
-$ git add -p
-
-# 删除工作区文件，并且将这次删除放入暂存区
-$ git rm [file1] [file2] ...
-
-# 停止追踪指定文件，但该文件会保留在工作区
-$ git rm --cached [file]
-
-# 改名文件，并且将这个改名放入暂存区
-$ git mv [file-original] [file-renamed]
-</code></pre>
-<h2 id="四-代码提交">四、代码提交</h2>
-<pre><code class="language-bash"># 提交暂存区到仓库区
-$ git commit -m [message]
-
-# 提交暂存区的指定文件到仓库区
-$ git commit [file1] [file2] ... -m [message]
-
-# 提交工作区自上次commit之后的变化，直接到仓库区
-$ git commit -a
-
-# 提交时显示所有diff信息
-$ git commit -v
-
-# 使用一次新的commit，替代上一次提交
-# 如果代码没有任何新变化，则用来改写上一次commit的提交信息
-$ git commit --amend -m [message]
-
-# 重做上一次commit，并包括指定文件的新变化
-$ git commit --amend [file1] [file2] ...
-</code></pre>
-<h2 id="五-分支">五、分支</h2>
-<pre><code class="language-bash"># 列出所有本地分支
-$ git branch
-
-# 列出所有远程分支
-$ git branch -r
-
-# 列出所有本地分支和远程分支
-$ git branch -a
-
-# 新建一个分支，但依然停留在当前分支
-$ git branch [branch-name]
-
-# 新建一个分支，并切换到该分支
-$ git checkout -b [branch]
-
-# 新建一个分支，指向指定commit
-$ git branch [branch] [commit]
-
-# 新建一个分支，与指定的远程分支建立追踪关系
-$ git branch --track [branch] [remote-branch]
-
-# 切换到指定分支，并更新工作区
-$ git checkout [branch-name]
-
-# 切换到上一个分支
-$ git checkout -
-
-# 建立追踪关系，在现有分支与指定的远程分支之间
-$ git branch --set-upstream [branch] [remote-branch]
-
-# 合并指定分支到当前分支
-$ git merge [branch]
-
-# 选择一个commit，合并进当前分支
-$ git cherry-pick [commit]
-
-# 删除分支
-$ git branch -d [branch-name]
-
-# 删除远程分支
-$ git push origin --delete [branch-name]
-$ git branch -dr [remote/branch]
-</code></pre>
-<h2 id="六-标签">六、标签</h2>
-<pre><code class="language-bash"># 列出所有tag
-$ git tag
-
-# 新建一个tag在当前commit
-$ git tag [tag]
-
-# 新建一个tag在指定commit
-$ git tag [tag] [commit]
-
-# 删除本地tag
-$ git tag -d [tag]
-
-# 删除远程tag
-$ git push origin :refs/tags/[tagName]
-
-# 查看tag信息
-$ git show [tag]
-
-# 提交指定tag
-$ git push [remote] [tag]
-
-# 提交所有tag
-$ git push [remote] --tags
-
-# 新建一个分支，指向某个tag
-$ git checkout -b [branch] [tag]
-</code></pre>
-<h2 id="七-查看信息">七、查看信息</h2>
-<pre><code class="language-bash"># 显示有变更的文件
-$ git status
-
-# 显示当前分支的版本历史
-$ git log
-
-# 显示commit历史，以及每次commit发生变更的文件
-$ git log --stat
-
-# 搜索提交历史，根据关键词
-$ git log -S [keyword]
-
-# 显示某个commit之后的所有变动，每个commit占据一行
-$ git log [tag] HEAD --pretty=format:%s
-
-# 显示某个commit之后的所有变动，其&quot;提交说明&quot;必须符合搜索条件
-$ git log [tag] HEAD --grep feature
-
-# 显示某个文件的版本历史，包括文件改名
-$ git log --follow [file]
-$ git whatchanged [file]
-
-# 显示指定文件相关的每一次diff
-$ git log -p [file]
-
-# 显示过去5次提交
-$ git log -5 --pretty --oneline
-
-# 显示所有提交过的用户，按提交次数排序
-$ git shortlog -sn
-
-# 显示指定文件是什么人在什么时间修改过
-$ git blame [file]
-
-# 显示暂存区和工作区的差异
-$ git diff
-
-# 显示暂存区和上一个commit的差异
-$ git diff --cached [file]
-
-# 显示工作区与当前分支最新commit之间的差异
-$ git diff HEAD
-
-# 显示两次提交之间的差异
-$ git diff [first-branch]...[second-branch]
-
-# 显示今天你写了多少行代码
-$ git diff --shortstat &quot;@{0 day ago}&quot;
-
-# 显示某次提交的元数据和内容变化
-$ git show [commit]
-
-# 显示某次提交发生变化的文件
-$ git show --name-only [commit]
-
-# 显示某次提交时，某个文件的内容
-$ git show [commit]:[filename]
-
-# 显示当前分支的最近几次提交
-$ git reflog
-</code></pre>
-<h2 id="八-远程同步">八、远程同步</h2>
-<pre><code class="language-bash"># 下载远程仓库的所有变动
-$ git fetch [remote]
-
-# 显示所有远程仓库
-$ git remote -v
-
-# 显示某个远程仓库的信息
-$ git remote show [remote]
-
-# 增加一个新的远程仓库，并命名
-$ git remote add [shortname] [url]
-
-# 取回远程仓库的变化，并与本地分支合并
-$ git pull [remote] [branch]
-
-# 上传本地指定分支到远程仓库
-$ git push [remote] [branch]
-
-# 强行推送当前分支到远程仓库，即使有冲突
-$ git push [remote] --force
-
-# 推送所有分支到远程仓库
-$ git push [remote] --all
-</code></pre>
-<h2 id="九-撤销">九、撤销</h2>
-<pre><code class="language-bash"># 恢复暂存区的指定文件到工作区
-$ git checkout [file]
-
-# 恢复某个commit的指定文件到暂存区和工作区
-$ git checkout [commit] [file]
-
-# 恢复暂存区的所有文件到工作区
-$ git checkout .
-
-# 重置暂存区的指定文件，与上一次commit保持一致，但工作区不变
-$ git reset [file]
-
-# 重置暂存区与工作区，与上一次commit保持一致
-$ git reset --hard
-
-# 重置当前分支的指针为指定commit，同时重置暂存区，但工作区不变
-$ git reset [commit]
-
-# 重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致
-$ git reset --hard [commit]
-
-# 重置当前HEAD为指定commit，但保持暂存区和工作区不变
-$ git reset --keep [commit]
-
-# 新建一个commit，用来撤销指定commit
-# 后者的所有变化都将被前者抵消，并且应用到当前分支
-$ git revert [commit]
-
-# 暂时将未提交的变化移除，稍后再移入
-$ git stash
-$ git stash pop
-</code></pre>
-<h2 id="十-其他">十、其他</h2>
-<pre><code class="language-bash"># 生成一个可供发布的压缩包
-$ git archive
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[springboot项目中添加redis]]></title>
-        <id>https://zhoujings.github.io/post/test/</id>
-        <link href="https://zhoujings.github.io/post/test/">
-        </link>
-        <updated>2020-08-13T10:04:32.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-在pom文件中添加依赖">1、在pom文件中添加依赖</h2>
-<pre><code class="language-bash">&lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-</code></pre>
-<h2 id="2-配置redis">2、配置redis</h2>
-<pre><code class="language-bash">spring:
-  redis:
-    host: 127.0.0.1
-    port: 6379
-</code></pre>
-<h2 id="3-添加redis配置类">3、添加redis配置类</h2>
-<pre><code class="language-bash">package com.zhoujs.redis.config;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
-import java.net.UnknownHostException;
-/**
- * @author zhoujs
- * @create 2020/9/21 17:39
- **/
-@Configuration
-public class RedisConfig {
-    @Bean
-    public RedisTemplate&lt;String, Object&gt; redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
-        RedisTemplate&lt;String, Object&gt; template = new RedisTemplate();
-        template.setConnectionFactory(redisConnectionFactory);
-        Jackson2JsonRedisSerializer Jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        ObjectMapper om  = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
-        Jackson2JsonRedisSerializer.setObjectMapper(om);
-        //String序列化
-        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-        //key采用String的序列化方式
-        template.setKeySerializer(stringRedisSerializer);
-        template.setHashKeySerializer(stringRedisSerializer);
-        template.setValueSerializer(Jackson2JsonRedisSerializer);
-        template.setHashValueSerializer(Jackson2JsonRedisSerializer);
-        template.afterPropertiesSet();
-        return template;
-    }
-}
-</code></pre>
 ]]></content>
     </entry>
 </feed>
