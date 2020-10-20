@@ -2,20 +2,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>springboot项目中添加redis | ZhouJingS的java之旅</title>
+<title>Socket通信demo | ZhouJingS的java之旅</title>
 <link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1603199671487">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="springboot项目中添加redis | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="Socket通信demo | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="1、在pom文件中添加依赖
-&lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;art..." />
-    <meta name="keywords" content="redis" />
+    <meta name="description" content="package com.zhoujs.server;
+
+import org.springframework.boot.test.context.SpringBootTest;
+import java.io.*;
+import java.n..." />
+    <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
   </head>
@@ -77,89 +78,142 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              springboot项目中添加redis
+              Socket通信demo
             </h2>
             <div class="post-info">
               <span>
-                2020-08-13
+                2020-10-20
               </span>
               <span>
                 2 min read
               </span>
               
-                <a href="https://zhoujings.github.io/tag/u3LPwXDpK/" class="post-tag">
-                  # redis
-                </a>
-              
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <h2 id="1-在pom文件中添加依赖">1、在pom文件中添加依赖</h2>
-<pre><code class="language-bash">&lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-</code></pre>
-<h2 id="2-配置redis">2、配置redis</h2>
-<pre><code class="language-bash">spring:
-  redis:
-    host: 127.0.0.1
-    port: 6379
-</code></pre>
-<h2 id="3-添加redis配置类">3、添加redis配置类</h2>
-<pre><code class="language-bash">package com.zhoujs.redis.config;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
-import java.net.UnknownHostException;
+                <pre><code class="language-java">package com.zhoujs.server;
+
+import org.springframework.boot.test.context.SpringBootTest;
+import java.io.*;
+import java.net.*;
+
 /**
+ * Server*
  * @author zhoujs
- * @create 2020/9/21 17:39
+ * @description *
+ * @create 2020/9/20 21:12
  **/
-@Configuration
-public class RedisConfig {
-    @Bean
-    public RedisTemplate&lt;String, Object&gt; redisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
-        RedisTemplate&lt;String, Object&gt; template = new RedisTemplate();
-        template.setConnectionFactory(redisConnectionFactory);
-        Jackson2JsonRedisSerializer Jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        ObjectMapper om  = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
-        Jackson2JsonRedisSerializer.setObjectMapper(om);
-        //String序列化
-        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-        //key采用String的序列化方式
-        template.setKeySerializer(stringRedisSerializer);
-        template.setHashKeySerializer(stringRedisSerializer);
-        template.setValueSerializer(Jackson2JsonRedisSerializer);
-        template.setHashValueSerializer(Jackson2JsonRedisSerializer);
-        template.afterPropertiesSet();
-        return template;
+
+
+@SpringBootTest
+class Server {
+    private static int count;
+    private static Socket socket;
+
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(9527);
+        System.out.println(&quot;服务器已启动,等待客户连接...&quot;);
+        while(true){
+            socket = serverSocket.accept();
+            ServerThread st = new ServerThread(socket);
+            st.start();
+            System.out.println(&quot;这是第&quot;+(count++)+&quot;位用户访问&quot;);
+            System.out.println(&quot;此用户的IP地址为&quot;+socket.getInetAddress().getHostAddress());
+        }
     }
 }
+
+
+class ServerThread extends Thread {
+
+    private Socket socket = null;
+    private InputStream inputStream = null;
+    private InputStreamReader inputStreamReader = null;
+    private BufferedReader bufferedReader = null;
+    private OutputStream outputStream = null;
+    private PrintStream printStream = null;
+    private String a;
+    private String b = &quot;Hello JAVA&quot;;
+
+    public ServerThread(Socket socket) {
+        this.socket = socket;
+    }
+    @Override
+    public void run() {
+        super.run();
+        try {
+            inputStream = socket.getInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        inputStreamReader = new InputStreamReader(inputStream);
+        bufferedReader = new BufferedReader(inputStreamReader);
+        try {
+            while((a = bufferedReader.readLine()) != null){
+                System.out.println(&quot;客户端说:&quot;+a);
+                socket.shutdownInput();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            outputStream = socket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        printStream = new PrintStream(outputStream);
+        try {
+            printStream.write(b.getBytes());
+            socket.shutdownOutput();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+
+
+
+
+class client{
+
+    private static String info = &quot;Hello World&quot;;
+    private static String localhost;
+    private static byte[] b;
+    private static String a;
+
+    public static void main(String[] args) throws UnknownHostException, IOException {
+        Socket socket = new Socket(localhost, 9527);
+        OutputStream outputStream = socket.getOutputStream();
+        PrintStream ps = new PrintStream(outputStream);
+        b = info.getBytes();
+        ps.write(b);
+        ps.flush();
+        //千万不能忘记关闭输入输出流!!否则不会出结果!!
+        socket.shutdownOutput();
+        InputStream inputStream = socket.getInputStream();
+        BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
+        while((a = bf.readLine()) != null){
+            System.out.println(&quot;服务器说:&quot;+a);
+        }
+        socket.shutdownInput();
+        bf.close();
+        inputStream.close();
+        ps.close();
+        outputStream.close();
+        socket.close();
+    }
+}
+
+
 </code></pre>
 
               </div>
               <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#1-%E5%9C%A8pom%E6%96%87%E4%BB%B6%E4%B8%AD%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96">1、在pom文件中添加依赖</a></li>
-<li><a href="#2-%E9%85%8D%E7%BD%AEredis">2、配置redis</a></li>
-<li><a href="#3-%E6%B7%BB%E5%8A%A0redis%E9%85%8D%E7%BD%AE%E7%B1%BB">3、添加redis配置类</a></li>
-</ul>
-</li>
-</ul>
-
+                
               </div>
             </div>
           </article>
@@ -168,9 +222,9 @@ public class RedisConfig {
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://zhoujings.github.io/post/sm3-yu-md5-jia-mi-qu-bie/">
+            <a href="https://zhoujings.github.io/post/hashmap/">
               <h3 class="post-title">
-                IDEA push 代码被拒绝解决方案
+                HashMap
               </h3>
             </a>
           </div>

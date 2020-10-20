@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-17T15:32:22.794Z</updated>
+    <updated>2020-10-20T13:14:35.254Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -10,6 +10,132 @@
     <logo>https://zhoujings.github.io/images/avatar.png</logo>
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
+    <entry>
+        <title type="html"><![CDATA[Socket通信demo]]></title>
+        <id>https://zhoujings.github.io/post/socket-tong-xin-demo/</id>
+        <link href="https://zhoujings.github.io/post/socket-tong-xin-demo/">
+        </link>
+        <updated>2020-10-20T13:14:14.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-java">package com.zhoujs.server;
+
+import org.springframework.boot.test.context.SpringBootTest;
+import java.io.*;
+import java.net.*;
+
+/**
+ * Server*
+ * @author zhoujs
+ * @description *
+ * @create 2020/9/20 21:12
+ **/
+
+
+@SpringBootTest
+class Server {
+    private static int count;
+    private static Socket socket;
+
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(9527);
+        System.out.println(&quot;服务器已启动,等待客户连接...&quot;);
+        while(true){
+            socket = serverSocket.accept();
+            ServerThread st = new ServerThread(socket);
+            st.start();
+            System.out.println(&quot;这是第&quot;+(count++)+&quot;位用户访问&quot;);
+            System.out.println(&quot;此用户的IP地址为&quot;+socket.getInetAddress().getHostAddress());
+        }
+    }
+}
+
+
+class ServerThread extends Thread {
+
+    private Socket socket = null;
+    private InputStream inputStream = null;
+    private InputStreamReader inputStreamReader = null;
+    private BufferedReader bufferedReader = null;
+    private OutputStream outputStream = null;
+    private PrintStream printStream = null;
+    private String a;
+    private String b = &quot;Hello JAVA&quot;;
+
+    public ServerThread(Socket socket) {
+        this.socket = socket;
+    }
+    @Override
+    public void run() {
+        super.run();
+        try {
+            inputStream = socket.getInputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        inputStreamReader = new InputStreamReader(inputStream);
+        bufferedReader = new BufferedReader(inputStreamReader);
+        try {
+            while((a = bufferedReader.readLine()) != null){
+                System.out.println(&quot;客户端说:&quot;+a);
+                socket.shutdownInput();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            outputStream = socket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        printStream = new PrintStream(outputStream);
+        try {
+            printStream.write(b.getBytes());
+            socket.shutdownOutput();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+
+
+
+
+class client{
+
+    private static String info = &quot;Hello World&quot;;
+    private static String localhost;
+    private static byte[] b;
+    private static String a;
+
+    public static void main(String[] args) throws UnknownHostException, IOException {
+        Socket socket = new Socket(localhost, 9527);
+        OutputStream outputStream = socket.getOutputStream();
+        PrintStream ps = new PrintStream(outputStream);
+        b = info.getBytes();
+        ps.write(b);
+        ps.flush();
+        //千万不能忘记关闭输入输出流!!否则不会出结果!!
+        socket.shutdownOutput();
+        InputStream inputStream = socket.getInputStream();
+        BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream));
+        while((a = bf.readLine()) != null){
+            System.out.println(&quot;服务器说:&quot;+a);
+        }
+        socket.shutdownInput();
+        bf.close();
+        inputStream.close();
+        ps.close();
+        outputStream.close();
+        socket.close();
+    }
+}
+
+
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[HashMap]]></title>
         <id>https://zhoujings.github.io/post/hashmap/</id>
@@ -362,30 +488,6 @@ class Student{
 　　　　3.当BootstrapClassLoader加载到这个.class时，它会查找该类是否存在，如果不存在，就往下传递，交给ExtClassLoader，如果ExtClassLoader在自己相应的包中也没找到对应的类，就交给AppClassLoader来加载，如果AppClassLoader也没有，就报ClassNotFoundException();</p>
 <h2 id="沙箱安全机制">沙箱安全机制</h2>
 <p>比如我定义了一个类名为String所在包为java.lang，因为这个类本来是属于jdk的，如果没有沙箱安全  机制的话，这个类将会污染到我所有的String,但是由于沙箱安全机制，所以就委托顶层的bootstrap加载器查找这个类，如果没有的话就委托extsion,extsion没有就到aapclassloader，但是由于String就是jdk的源代码，所以在bootstrap那里就加载到了，先找到先使用，所以就使用bootstrap里面的String,后面的一概不能使用，这就保证了不被恶意代码污染。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[类装载器 ClassLoader]]></title>
-        <id>https://zhoujings.github.io/post/lei-zhuang-zai-qi-classloader/</id>
-        <link href="https://zhoujings.github.io/post/lei-zhuang-zai-qi-classloader/">
-        </link>
-        <updated>2020-10-13T11:40:00.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-描述">1、描述</h2>
-<pre><code>    类装载器负责装在.class文件，class文件在文件开头有特定的文件标识（cafe babe）  来标 识这是一个java的class文件。将.class文件加载到内存中，将其放在运行时数据区（Runtime   
- Data Area）的&lt;b&gt;方法区&lt;/b&gt;（放类的描述信息）内。然后在堆区创建一个java.lang.Class
- 对象，用来封装类在方法区内的数据结构，ClassLoader只负责class文件的加载。至于它是否可运行交给Execution Engine（执行引擎）来决定。
-</code></pre>
-<h2 id="2-分类">2、分类</h2>
-<pre><code>    ClassLoader一共有3+1个。有3个是java自带的。1是你可以自定义的。  
-    启动类加载器（Bootstrap ClassLoader）：又叫根加载器，用C++语言编写，加载rt.jar中的类。
-</code></pre>
-<p>（如rt.jar，所有的java.*开头的类均被Bootstrap ClassLoader加载）。<br>
-扩展类加载器（Extension ClassLoader）：由java语言编写。用来加载java历史长河中各种扩展的技术类。它负责加载JDK\jre\lib\ext目录下的（如javax.*开头的类）。<br>
-应用程序类加载器（Application ClassLoader）：如果用户没有自定义类加载器，则我们所写的类均被应用程序类加载器加载。<br>
-以上3个类加载器从上到下子父级依次递减。爷爷 爸爸 儿子</p>
-<h2 id="3-加载顺序">3、加载顺序</h2>
-<figure data-type="image" tabindex="1"><img src="https://zhoujings.github.io/post-images/1602590748191.png" alt="" loading="lazy"></figure>
-<p>例如当我们要使用某个类的时候，顺序是这样的，首先先去启动类加载器bootstrap找，如果有就直接用如果没有就去扩展类加载器找，如果扩展类加载器没有，就去应用程序加载器找，如果还是没有，就报ClassNotFoundException异常。</p>
 ]]></content>
     </entry>
 </feed>
