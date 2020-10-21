@@ -2,19 +2,24 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>垃圾收集算法 | ZhouJingS的java之旅</title>
+<title>索引注意事项 | ZhouJingS的java之旅</title>
 <link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1603273610819">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="垃圾收集算法 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="索引注意事项 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="1、引用计数法
-给对象添加一个应用计数器，每当应用该对象的时候，计数器就加1，当引用失效时就减1。当计数器为0时表示不再被使用。但是很难解决循环引用的问题。基本没有使用。了解就行了。
-2、复制算法
-复制算法将可用内存分为大小相等的两块内存区..." />
+    <meta name="description" content="口诀
+全值匹配我最爱，最左前缀要遵守
+带头大哥不能死，中间兄弟不能断
+索引列上少计算，范围之后全失效
+LIKE符号写最右，覆盖索引不写星
+不等空值还有or，索引失效要少用
+var引号不能丢，SQL高级也不难
+分组之前必排序，一定要上索引啊
+..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -77,11 +82,11 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              垃圾收集算法
+              索引注意事项
             </h2>
             <div class="post-info">
               <span>
-                2020-10-17
+                2020-10-21
               </span>
               <span>
                 2 min read
@@ -91,24 +96,37 @@
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <h2 id="1-引用计数法">1、引用计数法</h2>
-<p>给对象添加一个应用计数器，每当应用该对象的时候，计数器就加1，当引用失效时就减1。当计数器为0时表示不再被使用。但是很难解决循环引用的问题。基本没有使用。了解就行了。</p>
-<h2 id="2-复制算法">2、复制算法</h2>
-<p>复制算法将可用内存分为大小相等的两块内存区域，每次只使用其中一块。当调用复制算法的时候，就会把当前存活的对象复制到另一块区域。然后把当前区域清理掉。这种算法效率高，且不会存在内存碎片。复制算法要想使用，最起码对象的存活率要非常低才行，而且最重要的是，我们必须要克服50%内存的浪费。</p>
-<h2 id="3-标记-清除算法">3、标记-清除算法</h2>
-<p>这种算法就是把当前内存中的不可用对象会挨个标记一遍。然后执行清除操作。这种算法不会浪费空间，但是效率不如复制算法。且会存在内存碎片的问题。</p>
-<h2 id="4-标记-整理算法">4、标记-整理算法</h2>
-<p>标记整理算法就是在标记清楚算法的基础上加上了整理这一个步骤。把以前内存不连续的对象，整理在一起。就解决了内存碎片的问题。但是相对来说效率就更低了一点。</p>
+                <h2 id="口诀">口诀</h2>
+<p>全值匹配我最爱，最左前缀要遵守<br>
+带头大哥不能死，中间兄弟不能断<br>
+索引列上少计算，范围之后全失效<br>
+LIKE符号写最右，覆盖索引不写星<br>
+不等空值还有or，索引失效要少用<br>
+var引号不能丢，SQL高级也不难<br>
+分组之前必排序，一定要上索引啊</p>
+<h2 id="注意点">注意点</h2>
+<p>建索引注意事项<br>
+1、单值索引，尽量选择过滤性更好的字段，例如：性别字段，过滤度为50%，识别率很差，不建议建索引<br>
+2、组合索引，索引字段的顺序可以按照识别度进行排序，识别度越高，放在越靠前<br>
+3、组合索引，尽量包含where语句中的更多字段<br>
+4、尽可能的根据分析执行计划、统计信息，去调整query的写法达到合适索引的目的</p>
+<p>索引容易失效的几个注意点<br>
+1、不在索引列上做任何的操作（计算、函数、类型转换），会导致索引失效而转向全表扫描<br>
+2、组合索引中，如果中间某个字段使用了范围条件，则右边的列索引失效<br>
+3、尽量使用覆盖索引（索引列和查询列一致），减少使用select *<br>
+4、mysql在使用不等于（！= 或者&lt;&gt;）的时候，无法使用索引列会导致全表扫描<br>
+5、is null ，is not null 也无法使用索引<br>
+6、like通配符必须放在索引列的右边，否则索引失效，编程全表扫描<br>
+7、字符串不加单引号索引失效<br>
+8、少用or，用它连接索引会失效，除非都有索引。</p>
 
               </div>
               <div class="toc-container">
                 <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#1-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E6%B3%95">1、引用计数法</a></li>
-<li><a href="#2-%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95">2、复制算法</a></li>
-<li><a href="#3-%E6%A0%87%E8%AE%B0-%E6%B8%85%E9%99%A4%E7%AE%97%E6%B3%95">3、标记-清除算法</a></li>
-<li><a href="#4-%E6%A0%87%E8%AE%B0-%E6%95%B4%E7%90%86%E7%AE%97%E6%B3%95">4、标记-整理算法</a></li>
+<li><a href="#%E5%8F%A3%E8%AF%80">口诀</a></li>
+<li><a href="#%E6%B3%A8%E6%84%8F%E7%82%B9">注意点</a></li>
 </ul>
 </li>
 </ul>
@@ -121,9 +139,9 @@
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://zhoujings.github.io/post/fang-fa-qu-yuan-kong-jian-yong-jiu-dai-chang-liang-chi/">
+            <a href="https://zhoujings.github.io/post/explain-zhi-type/">
               <h3 class="post-title">
-                方法区元空间永久代常量池
+                Explain之type
               </h3>
             </a>
           </div>
