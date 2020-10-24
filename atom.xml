@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-21T09:46:54.347Z</updated>
+    <updated>2020-10-24T15:02:30.113Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -10,6 +10,63 @@
     <logo>https://zhoujings.github.io/images/avatar.png</logo>
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
+    <entry>
+        <title type="html"><![CDATA[Hystrix执行流程图解]]></title>
+        <id>https://zhoujings.github.io/post/hystrix-zhi-xing-liu-cheng-tu-jie/</id>
+        <link href="https://zhoujings.github.io/post/hystrix-zhi-xing-liu-cheng-tu-jie/">
+        </link>
+        <updated>2020-10-24T14:57:10.000Z</updated>
+        <content type="html"><![CDATA[<figure data-type="image" tabindex="1"><img src="https://zhoujings.github.io/post-images/1603551507929.png" alt="" loading="lazy"></figure>
+<h2 id="流程说明">流程说明</h2>
+<p>1、每次调用创建一个新的HystrixCommand,把依赖调用封装在run()方法中.<br>
+2、执行execute()/queue做同步或异步调用.<br>
+3、当前调用是否已被缓存，是则直接返回结果，否则进入步骤 4<br>
+4、判断熔断器(circuit-breaker)是否打开,如果打开跳到步骤 8,进行降级策略,如果关闭进入步骤 5<br>
+5、判断线程池/队列/信号量是否跑满，如果跑满进入降级步骤8,否则继续后续步骤 6<br>
+6、调用HystrixCommand的run方法.运行依赖逻辑<br>
+6.1. 调用是否出现异常，否：继续，是进入步骤8，<br>
+6.2. 调用是否超时，否：返回调用结果，是进入步骤8<br>
+7、搜集5、6步骤所有的运行状态(成功, 失败, 拒绝,超时)上报给熔断器，用于统计从而判断熔断器状态<br>
+8、getFallback()降级逻辑.四种触发getFallback调用情况（图中步骤8的箭头来源）：<br>
+返回执行成功结果</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Hystrix Dashboard问题]]></title>
+        <id>https://zhoujings.github.io/post/hystrix-dashboard-wen-ti/</id>
+        <link href="https://zhoujings.github.io/post/hystrix-dashboard-wen-ti/">
+        </link>
+        <updated>2020-10-24T14:51:34.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="问题">问题</h2>
+<p>当访问网站的时候出现Unable to connect to Command Metric Stream问题的时候，需要在被监控服务端启动类上加上如下代码。</p>
+<pre><code class="language-java">@Bean
+    public ServletRegistrationBean getServlet(){
+        HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
+        ServletRegistrationBean registrationBean = new ServletRegistrationBean(streamServlet);
+        registrationBean.setLoadOnStartup(1);
+        registrationBean.addUrlMappings(&quot;/hystrix.stream&quot;);
+        registrationBean.setName(&quot;HystrixMetricsStreamServlet&quot;);
+        return registrationBean;
+    }</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Left Join]]></title>
+        <id>https://zhoujings.github.io/post/left-join-shen-ru-jie-xi/</id>
+        <link href="https://zhoujings.github.io/post/left-join-shen-ru-jie-xi/">
+        </link>
+        <updated>2020-10-23T07:48:19.000Z</updated>
+        <content type="html"><![CDATA[<p>随便创建2张表数据<br>
+<img src="https://zhoujings.github.io/post-images/1603439826504.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-base">SELECT * FROM product p left JOIN product_details pd ON pd.id=p.id
+</code></pre>
+<pre><code>   ![](https://zhoujings.github.io/post-images/1603439544536.jpg)
+</code></pre>
+<p>红色区代表主表数据，这个数数据不管你on后面怎么加条件，他都不会改变。想改变主表数据必须把条件加在where后面。<br>
+** on后面加条件是关联前进行数据筛选，where后加条件是对整体已经关联好的数据进行筛选。**<br>
+主表条件写在where后，副表条件卸载on后面</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[索引注意事项]]></title>
         <id>https://zhoujings.github.io/post/suo-yin-zhu-yi-shi-xiang/</id>
@@ -391,122 +448,6 @@ System.out.println(str1 == str2);<br>
 }<br>
 }<br>
 以上程序的运行结果仍然是false，这时因为intern生成的str2所引用的字符串内容是在字符串常量池中，而通过new String方法生成的str1，该字符串对象是位于存放对象的Java堆中，二者的地址是不同的。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[java堆内存heap]]></title>
-        <id>https://zhoujings.github.io/post/java-dui-nei-cun-heap/</id>
-        <link href="https://zhoujings.github.io/post/java-dui-nei-cun-heap/">
-        </link>
-        <updated>2020-10-16T15:01:20.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-概念">1、概念</h2>
-<p>堆内存是java虚拟机中重要的组成部分，俗话说 栈管运行 堆管存储。所以我们也知道了堆的作用就是用来存储数据的。我们平时new出来的数据就存在堆中。因为数据会占用内存所以堆内存的优化就很重要。当程序需要申请内存使用的时候，如果堆中内存不足，则会抛出OOM（Out Of Memoy）异常。</p>
-<h2 id="2-内存划分">2、内存划分</h2>
-<p>1、物理内存分为年轻代和老年代。逻辑层面说多了一个非堆内存元空间存储在内存中不受限于JVM本身分配的内存（JDK1.7 1.6及叫永久代，存储在JVM中）。<br>
-2、年轻代又分为Eden（新对象存储区域）和Survivor区。Survivor区由FromSpace和ToSpace组成也叫S0 S1。Eden区占大容量，Survivor两个区占小容量，默认比例是8:1:1<br>
-3、元空间是方法区的一种具体实现，里面存放的是被虚拟机加载的类信息、常量、静态变量、动态生成的类等数据。</p>
-<h2 id="3-堆的垃圾回收方式">3、堆的垃圾回收方式</h2>
-<p>java堆是GC垃圾回收的主要区域。 GC分为两种： Minor GC、Full GC（也叫做Major GC）.</p>
-<h2 id="4-minor-gc简称gc">4、Minor GC(简称GC)</h2>
-<p>Minor GC是发生在新生代中的垃圾收集动作， 所采用的是复制算法。<br>
-GC一般为堆空间某个区发生了垃圾回收，<br>
-新生代（Young）几乎是所有java对象出生的地方。即java对象申请的内存以及存放都是在这个地方。java中的大部分对象通常不会长久的存活， 具有朝生夕死的特点。<br>
-当一个对象被判定为“死亡”的时候， GC就有责任来回收掉这部分对象的内存空间。<br>
-新生代是收集垃圾的频繁区域。</p>
-<h2 id="5-回收过程如下">5、回收过程如下：</h2>
-<p>当对象在 Eden ( 包括一个 Survivor 区域，这里假设是 from 区域 ) 出生后，在经过一次 Minor GC 后，如果对象还存活，并且能够被另外一块 Survivor 区域所容纳(上面已经假设为 from 区域，这里应为 to 区域，即 to 区域有足够的内存空间来存储 Eden 和 from 区域中存活的对象 )，则使用复制算法将这些仍然还存活的对象复制到另外一块 Survivor 区域 ( 即 to 区域 ) 中，然后清理所使用过的 Eden 以及 Survivor 区域 ( 即 from 区域 )，并且将这些对象的年龄设置为1，以后对象在 Survivor 区每熬过一次 Minor GC，就将对象的年龄 + 1，当对象的年龄达到某个值时 ( 默认是 15 岁，可以通过参数 -XX:MaxTenuringThreshold 来设定 )，这些对象就会成为老年代。<br>
-但这也不是一定的，对于一些较大的对象 ( 即需要分配一块较大的连续内存空间 ) 则是直接进入到老年代。</p>
-<h2 id="6-full-gc">6、Full GC</h2>
-<p>Full GC 基本都是整个堆空间及持久代发生了垃圾回收，所采用的是标记-清除算法。<br>
-现实的生活中，老年代的人通常会比新生代的人 “早死”。堆内存中的老年代(Old)不同于这个，老年代里面的对象几乎个个都是在 Survivor 区域中熬过来的，它们是不会那么容易就 “死掉” 了的。因此，Full GC 发生的次数不会有 Minor GC 那么频繁，并且做一次 Full GC 要比进行一次 Minor GC 的时间更长，一般是Minor GC的 10倍以上。<br>
-另外，标记-清除算法收集垃圾的时候会产生许多的内存碎片 ( 即不连续的内存空间 )，此后需要为较大的对象分配内存空间时，若无法找到足够的连续的内存空间，就会提前触发一次 GC 的收集动作</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[值传递]]></title>
-        <id>https://zhoujings.github.io/post/zhi-chuan-di/</id>
-        <link href="https://zhoujings.github.io/post/zhi-chuan-di/">
-        </link>
-        <updated>2020-10-16T14:27:43.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-概念">1、概念</h2>
-<p>程序员们普遍认为，当传的值是基础类型的时候，就是值传递。而当传递的是引用类型的时候，就是引用传递。其实这2种传递都是值传递，只是第二种传递把引用当成了一个值传递了。<br>
-所以当传递的是基础类型的时候，这是后就相当于是传递的复印件。并不会改变原始数据。<br>
-当传递的值是引用类型的时候，这时候复印的就是引用地址了，因为2个引用指向的是堆中同一块区域，所以任意一方改变值，都会造成数据修改。</p>
-<h2 id="2-string类型传递">2、String类型传递</h2>
-<p>但是当引用传递为String类型的时候，这就不一样了。<br>
-因为String类型存在方法区的常量池中。当要修改值的时候，会判断常量池中是否存在修改的值。如果没有则创建对应的值，并指向该值。但是原来数据还是指向的原始值。所以数据未改变。</p>
-<h2 id="2-总结">2、总结</h2>
-<p>基础类型传递不会改变原始数据。<br>
-引用类型传递会改变原始数据。String类型除外。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[类的初始化]]></title>
-        <id>https://zhoujings.github.io/post/lei-de-chu-shi-hua/</id>
-        <link href="https://zhoujings.github.io/post/lei-de-chu-shi-hua/">
-        </link>
-        <updated>2020-10-15T13:04:56.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="关于初始化">关于初始化</h2>
-<p>1、new新对象、读取静态变量、设置静态变量，调用静态函数当执行这些操作的时候如果类未被初始化则必须初始化。<br>
-2、使用java.lang.reflect包的方法对类进行发射调用时，如果被调用类未初始化，则需要出初始化。<br>
-3、当初始化一个类的时候，则必须先触发父类初始化。</p>
-<h2 id="不会初始化的情况">不会初始化的情况</h2>
-<p><strong>通过子类来引用父类的静态字段，不会导致子类初始化</strong></p>
-<pre><code class="language-java">@SpringBootTest
-class ApplicationTests {
-        public static void main(String[] args) {
-            System.out.println(Student.value);
-        }
-}
-class Person{
-    public static int value=123;
-    static{
-        System.out.println(&quot;Person init!&quot;);
-    }
-}
-class Student extends Person{
-    static{
-        System.out.println(&quot;Student init!&quot;);
-    }
-}
-</code></pre>
-<p>上面代码只会打印Person init。子类并未初始化。<br>
-<strong>通过数组定义来引用类，不会触发此类初始化</strong></p>
-<pre><code class="language-java">@SpringBootTest
-class ApplicationTests {
-        public static void main(String[] args) {
-            Student[] stus=new Student[10];
-            ArrayList list  = new ArrayList&lt;Student&gt;();
-        }
-}
-class Person{
-    public static int value=123;
-    static{
-        System.out.println(&quot;Person init!&quot;);
-    }
-}
-class Student extends Person{
-    static{
-        System.out.println(&quot;Student init!&quot;);
-    }
-}
-</code></pre>
-<p>并没有打印静态代码块，类未初始化。<br>
-<strong>调用类的全局常量不会初始化该类</strong></p>
-<pre><code class="language-java">@SpringBootTest
-class ApplicationTests {
-        public  static  void main(String[] args) {
-            System.out.println(Student.HELLO_WORLD);
-        }
-}
-class Student{
-     final static String HELLO_WORLD=&quot;hello world&quot;;
-    static{
-        System.out.println(&quot;Student init!&quot;);
-    }
-}
-</code></pre>
-<p>只打印hello world。Student类并未初始化。</p>
 ]]></content>
     </entry>
 </feed>

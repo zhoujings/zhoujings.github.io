@@ -2,19 +2,21 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>类装载器 ClassLoader | ZhouJingS的java之旅</title>
+<title>Left Join | ZhouJingS的java之旅</title>
 <link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1603551570875">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="类装载器 ClassLoader | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="alternate" type="application/atom+xml" title="Left Join | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="1、描述
-    类装载器负责装在.class文件，class文件在文件开头有特定的文件标识（cafe babe）  来标 识这是一个java的class文件。将.class文件加载到内存中，将其放在运行时数据区（Runtime   
- D..." />
-    <meta name="keywords" content="jvm" />
+    <meta name="description" content="随便创建2张表数据
+
+SELECT * FROM product p left JOIN product_details pd ON pd.id=p.id
+
+   ![](https://zhoujings.github.io/post-i..." />
+    <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
   </head>
@@ -76,53 +78,33 @@
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              类装载器 ClassLoader
+              Left Join
             </h2>
             <div class="post-info">
               <span>
-                2020-10-13
+                2020-10-23
               </span>
               <span>
-                2 min read
+                1 min read
               </span>
-              
-                <a href="https://zhoujings.github.io/tag/oZsOLIzc9/" class="post-tag">
-                  # jvm
-                </a>
               
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <h2 id="1-描述">1、描述</h2>
-<pre><code>    类装载器负责装在.class文件，class文件在文件开头有特定的文件标识（cafe babe）  来标 识这是一个java的class文件。将.class文件加载到内存中，将其放在运行时数据区（Runtime   
- Data Area）的&lt;b&gt;方法区&lt;/b&gt;（放类的描述信息）内。然后在堆区创建一个java.lang.Class
- 对象，用来封装类在方法区内的数据结构，ClassLoader只负责class文件的加载。至于它是否可运行交给Execution Engine（执行引擎）来决定。
+                <p>随便创建2张表数据<br>
+<img src="https://zhoujings.github.io/post-images/1603439826504.jpg" alt="" loading="lazy"></p>
+<pre><code class="language-base">SELECT * FROM product p left JOIN product_details pd ON pd.id=p.id
 </code></pre>
-<h2 id="2-分类">2、分类</h2>
-<pre><code>    ClassLoader一共有3+1个。有3个是java自带的。1是你可以自定义的。  
-    启动类加载器（Bootstrap ClassLoader）：又叫根加载器，用C++语言编写，加载rt.jar中的类。
+<pre><code>   ![](https://zhoujings.github.io/post-images/1603439544536.jpg)
 </code></pre>
-<p>（如rt.jar，所有的java.*开头的类均被Bootstrap ClassLoader加载）。<br>
-扩展类加载器（Extension ClassLoader）：由java语言编写。用来加载java历史长河中各种扩展的技术类。它负责加载JDK\jre\lib\ext目录下的（如javax.*开头的类）。<br>
-应用程序类加载器（Application ClassLoader）：如果用户没有自定义类加载器，则我们所写的类均被应用程序类加载器加载。<br>
-以上3个类加载器从上到下子父级依次递减。爷爷 爸爸 儿子</p>
-<h2 id="3-加载顺序">3、加载顺序</h2>
-<figure data-type="image" tabindex="1"><img src="https://zhoujings.github.io/post-images/1602590748191.png" alt="" loading="lazy"></figure>
-<p>例如当我们要使用某个类的时候，顺序是这样的，首先先去启动类加载器bootstrap找，如果有就直接用如果没有就去扩展类加载器找，如果扩展类加载器没有，就去应用程序加载器找，如果还是没有，就报ClassNotFoundException异常。</p>
+<p>红色区代表主表数据，这个数数据不管你on后面怎么加条件，他都不会改变。想改变主表数据必须把条件加在where后面。<br>
+** on后面加条件是关联前进行数据筛选，where后加条件是对整体已经关联好的数据进行筛选。**<br>
+主表条件写在where后，副表条件卸载on后面</p>
 
               </div>
               <div class="toc-container">
-                <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#1-%E6%8F%8F%E8%BF%B0">1、描述</a></li>
-<li><a href="#2-%E5%88%86%E7%B1%BB">2、分类</a></li>
-<li><a href="#3-%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F">3、加载顺序</a></li>
-</ul>
-</li>
-</ul>
-
+                
               </div>
             </div>
           </article>
@@ -131,9 +113,9 @@
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://zhoujings.github.io/post/xiang-mu-guan-li-zhe-chuang-jian-git-xiang-mu-liu-cheng-idea/">
+            <a href="https://zhoujings.github.io/post/suo-yin-zhu-yi-shi-xiang/">
               <h3 class="post-title">
-                项目管理者创建git项目流程（IDEA）
+                索引注意事项
               </h3>
             </a>
           </div>
