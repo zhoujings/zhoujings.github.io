@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-24T15:12:21.634Z</updated>
+    <updated>2020-10-25T14:46:40.404Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -51,23 +51,6 @@
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Left Join]]></title>
-        <id>https://zhoujings.github.io/post/left-join-shen-ru-jie-xi/</id>
-        <link href="https://zhoujings.github.io/post/left-join-shen-ru-jie-xi/">
-        </link>
-        <updated>2020-10-23T07:48:19.000Z</updated>
-        <content type="html"><![CDATA[<p>随便创建2张表数据<br>
-<img src="https://zhoujings.github.io/post-images/1603439826504.jpg" alt="" loading="lazy"></p>
-<pre><code class="language-base">SELECT * FROM product p left JOIN product_details pd ON pd.id=p.id
-</code></pre>
-<pre><code>   ![](https://zhoujings.github.io/post-images/1603439544536.jpg)
-</code></pre>
-<p>红色区代表主表数据，这个数数据不管你on后面怎么加条件，他都不会改变。想改变主表数据必须把条件加在where后面。<br>
-** on后面加条件是关联前进行数据筛选，where后加条件是对整体已经关联好的数据进行筛选。**<br>
-主表条件写在where后，副表条件卸载on后面</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[索引注意事项]]></title>
         <id>https://zhoujings.github.io/post/suo-yin-zhu-yi-shi-xiang/</id>
         <link href="https://zhoujings.github.io/post/suo-yin-zhu-yi-shi-xiang/">
@@ -96,36 +79,6 @@ var引号不能丢，SQL高级也不难<br>
 6、like通配符必须放在索引列的右边，否则索引失效，编程全表扫描<br>
 7、字符串不加单引号索引失效<br>
 8、少用or，用它连接索引会失效，除非都有索引。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Explain之type]]></title>
-        <id>https://zhoujings.github.io/post/explain-zhi-type/</id>
-        <link href="https://zhoujings.github.io/post/explain-zhi-type/">
-        </link>
-        <updated>2020-10-21T08:29:38.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="type连接类型">type连接类型</h2>
-<p>type官网全程“join type”，可以理解为一种数据库引擎查找表数据的一种方式，也可以称呼为访问lei型。经常遇到的六种类型分别是all，index，range，ref，eq_ref,const.从左到右效率依次增强。</p>
-<h2 id="all">all</h2>
-<p>这就是所谓的全表扫描，非常耗时且低效。我们应该避免这种类型的出现。<br>
-<img src="https://zhoujings.github.io/post-images/1603269881123.jpg" alt="" loading="lazy"><br>
-上面就是典型的全表扫描。</p>
-<h2 id="index">index</h2>
-<p>索引全扫描。<br>
-<img src="https://zhoujings.github.io/post-images/1603270497628.jpg" alt="" loading="lazy"><br>
-上面这种Extra是using index 索引覆盖，就是通过索引查询就能获取到所有结果，无需回表。<br>
-<img src="https://zhoujings.github.io/post-images/1603270651129.jpg" alt="" loading="lazy"><br>
-这种就进行了回表查询。</p>
-<h2 id="range">range</h2>
-<p>索引范围扫描，常见于使用 =, &lt;&gt;, &gt;, &gt;=, &lt;, &lt;=, IS NULL, &lt;=&gt;, BETWEEN, IN()或者like等运算符的查询中。<br>
-<img src="https://zhoujings.github.io/post-images/1603271448835.jpg" alt="" loading="lazy"></p>
-<h2 id="ref">ref</h2>
-<p>这种情况出现就是虽然使用到了索引，但是索引的值不唯一。会进行索引小范围的查找。<br>
-<img src="https://zhoujings.github.io/post-images/1603271701460.jpg" alt="" loading="lazy"></p>
-<h2 id="ref_eq">ref_eq</h2>
-<p>出现在要连接过个表的查询计划中，驱动表只返回一行数据，且这行数据是第二个表的主键或者唯一索引，且必须为not null，唯一索引和主键是多列时，只有所有的列都用作比较时才会出现eq_ref</p>
-<h2 id="const">const</h2>
-<p>使用唯一索引或者主键，返回记录一定是1行记录的等值where条件时，通常type是const。其他数据库也叫做唯一索引扫描</p>
 ]]></content>
     </entry>
     <entry>
@@ -255,161 +208,6 @@ class client{
 ]]></content>
     </entry>
     <entry>
-        <title type="html"><![CDATA[HashMap]]></title>
-        <id>https://zhoujings.github.io/post/hashmap/</id>
-        <link href="https://zhoujings.github.io/post/hashmap/">
-        </link>
-        <updated>2020-10-17T15:20:56.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="putval方法执行过程">putVal方法执行过程</h2>
-<p><img src="https://zhoujings.github.io/post-images/1602948133131.png" alt="" loading="lazy"><br>
-①.判断键值对数组table[i]是否为空或为null，否则执行resize()进行扩容；</p>
-<p>②.根据键值key计算hash值得到插入的数组索引i，如果table[i]==null，直接新建节点添加，转向⑥，如果table[i]不为空，转向③；</p>
-<p>③.判断table[i]的首个元素是否和key一样，如果相同直接覆盖value，否则转向④，这里的相同指的是hashCode以及equals；</p>
-<p>④.判断table[i] 是否为treeNode，即table[i] 是否是红黑树，如果是红黑树，则直接在树中插入键值对，否则转向⑤；</p>
-<p>⑤.遍历table[i]，判断链表长度是否大于8，大于8的话把链表转换为红黑树，在红黑树中执行插入操作，否则进行链表的插入操作；遍历过程中若发现key已经存在直接覆盖value即可；</p>
-<p>⑥.插入成功后，判断实际存在的键值对数量size是否超多了最大容量threshold，如果超过，进行扩容。</p>
-<h2 id="源码">源码</h2>
-<pre><code class="language-java">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
-                   boolean evict) {
-    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;
-    // 步骤①：tab为空则创建 
-    // table未初始化或者长度为0，进行扩容
-    if ((tab = table) == null || (n = tab.length) == 0)
-        n = (tab = resize()).length;
-    // 步骤②：计算index，并对null做处理  
-    // (n - 1) &amp; hash 确定元素存放在哪个桶中，桶为空，新生成结点放入桶中(此时，这个结点是放在数组中)
-    if ((p = tab[i = (n - 1) &amp; hash]) == null)
-        tab[i] = newNode(hash, key, value, null);
-    // 桶中已经存在元素
-    else {
-        Node&lt;K,V&gt; e; K k;
-        // 步骤③：节点key存在，直接覆盖value 
-        // 比较桶中第一个元素(数组中的结点)的hash值相等，key相等
-        if (p.hash == hash &amp;&amp;
-            ((k = p.key) == key || (key != null &amp;&amp; key.equals(k))))
-                // 将第一个元素赋值给e，用e来记录
-                e = p;
-        // 步骤④：判断该链为红黑树 
-        // hash值不相等，即key不相等；为红黑树结点
-        else if (p instanceof TreeNode)
-            // 放入树中
-            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);
-        // 步骤⑤：该链为链表 
-        // 为链表结点
-        else {
-            // 在链表最末插入结点
-            for (int binCount = 0; ; ++binCount) {
-                // 到达链表的尾部
-                if ((e = p.next) == null) {
-                    // 在尾部插入新结点
-                    p.next = newNode(hash, key, value, null);
-                    // 结点数量达到阈值，转化为红黑树
-                    if (binCount &gt;= TREEIFY_THRESHOLD - 1) // -1 for 1st
-                        treeifyBin(tab, hash);
-                    // 跳出循环
-                    break;
-                }
-                // 判断链表中结点的key值与插入的元素的key值是否相等
-                if (e.hash == hash &amp;&amp;
-                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
-                    // 相等，跳出循环
-                    break;
-                // 用于遍历桶中的链表，与前面的e = p.next组合，可以遍历链表
-                p = e;
-            }
-        }
-        // 表示在桶中找到key值、hash值与插入元素相等的结点
-        if (e != null) { 
-            // 记录e的value
-            V oldValue = e.value;
-            // onlyIfAbsent为false或者旧值为null
-            if (!onlyIfAbsent || oldValue == null)
-                //用新值替换旧值
-                e.value = value;
-            // 访问后回调
-            afterNodeAccess(e);
-            // 返回旧值
-            return oldValue;
-        }
-    }
-    // 结构性修改
-    ++modCount;
-    // 步骤⑥：超过最大容量 就扩容 
-    // 实际大小大于阈值则扩容
-    if (++size &gt; threshold)
-        resize();
-    // 插入后回调
-    afterNodeInsertion(evict);
-    return null;
-}
-</code></pre>
-<h2 id="hashmap的数据存储实现原理">HashMap的数据存储实现原理</h2>
-<p>流程：</p>
-<ol>
-<li>
-<p>根据key计算得到key.hash = (h = k.hashCode()) ^ (h &gt;&gt;&gt; 16)；</p>
-</li>
-<li>
-<p>根据key.hash计算得到桶数组的索引index = key.hash &amp; (table.length - 1)，这样就找到该key的存放位置了：</p>
-</li>
-</ol>
-<p>① 如果该位置没有数据，用该数据新生成一个节点保存新数据，返回null；</p>
-<p>② 如果该位置有数据是一个红黑树，那么执行相应的插入 / 更新操作；</p>
-<p>③ 如果该位置有数据是一个链表，分两种情况一是该链表没有这个节点，另一个是该链表上有这个节点，注意这里判断的依据是key.hash是否一样：</p>
-<p>如果该链表没有这个节点，那么采用尾插法新增节点保存新数据，返回null；如果该链表已经有这个节点了，那么找到该节点并更新新数据，返回老数据。</p>
-<p>注意：</p>
-<p>HashMap的put会返回key的上一次保存的数据，比如：</p>
-<p>HashMap&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();<br>
-System.out.println(map.put(&quot;a&quot;, &quot;A&quot;)); // 打印null<br>
-System.out.println(map.put(&quot;a&quot;, &quot;AA&quot;)); // 打印A<br>
-System.out.println(map.put(&quot;a&quot;, &quot;AB&quot;)); // 打印AA</p>
-<h2 id="getnode方法">getNode方法</h2>
-<pre><code class="language-java">final Node&lt;K,V&gt; getNode(int hash, Object key) {
-    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;
-    // table已经初始化，长度大于0，根据hash寻找table中的项也不为空
-    if ((tab = table) != null &amp;&amp; (n = tab.length) &gt; 0 &amp;&amp;
-        (first = tab[(n - 1) &amp; hash]) != null) {
-        // 桶中第一项(数组元素)相等
-        if (first.hash == hash &amp;&amp; // always check first node
-            ((k = first.key) == key || (key != null &amp;&amp; key.equals(k))))
-            return first;
-        // 桶中不止一个结点
-        if ((e = first.next) != null) {
-            // 为红黑树结点
-            if (first instanceof TreeNode)
-                // 在红黑树中查找
-                return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);
-            // 否则，在链表中查找
-            do {
-                if (e.hash == hash &amp;&amp;
-                    ((k = e.key) == key || (key != null &amp;&amp; key.equals(k))))
-                    return e;
-            } while ((e = e.next) != null);
-        }
-    }
-    return null;
-}
-
-
-
-本文参考链接：https://www.cnblogs.com/doufuyu/p/10874689.html
-
-</code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[XMS XMX设置问题]]></title>
-        <id>https://zhoujings.github.io/post/xms-xmx-she-zhi-wen-ti/</id>
-        <link href="https://zhoujings.github.io/post/xms-xmx-she-zhi-wen-ti/">
-        </link>
-        <updated>2020-10-17T12:57:59.000Z</updated>
-        <content type="html"><![CDATA[<p>-Xms：堆内存的最小内存值，默认为物理内存的1/64<br>
--Xmx：堆内存的最大内存值，默认为物理内存的1/4<br>
-堆内存存在动态扩容收缩机制，Xms过小会频繁触发GC操作。GC操作频繁就引起了性能问题。</p>
-<p>面对上面的问题，为了避免在生产环境由于heap内存扩大或缩小导致应用停顿，降低延迟，同时避免每次垃圾回收完成后JVM重新分配内存。所以，-Xms一般一开始就设置跟-Xmx一样发小。</p>
-]]></content>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[垃圾收集算法]]></title>
         <id>https://zhoujings.github.io/post/la-ji-shou-ji-suan-fa/</id>
         <link href="https://zhoujings.github.io/post/la-ji-shou-ji-suan-fa/">
@@ -448,6 +246,101 @@ System.out.println(str1 == str2);<br>
 }<br>
 }<br>
 以上程序的运行结果仍然是false，这时因为intern生成的str2所引用的字符串内容是在字符串常量池中，而通过new String方法生成的str1，该字符串对象是位于存放对象的Java堆中，二者的地址是不同的。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[java堆内存heap]]></title>
+        <id>https://zhoujings.github.io/post/java-dui-nei-cun-heap/</id>
+        <link href="https://zhoujings.github.io/post/java-dui-nei-cun-heap/">
+        </link>
+        <updated>2020-10-16T15:01:20.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-概念">1、概念</h2>
+<p>堆内存是java虚拟机中重要的组成部分，俗话说 栈管运行 堆管存储。所以我们也知道了堆的作用就是用来存储数据的。我们平时new出来的数据就存在堆中。因为数据会占用内存所以堆内存的优化就很重要。当程序需要申请内存使用的时候，如果堆中内存不足，则会抛出OOM（Out Of Memoy）异常。</p>
+<h2 id="2-内存划分">2、内存划分</h2>
+<p>1、物理内存分为年轻代和老年代。逻辑层面说多了一个非堆内存元空间存储在内存中不受限于JVM本身分配的内存（JDK1.7 1.6及叫永久代，存储在JVM中）。<br>
+2、年轻代又分为Eden（新对象存储区域）和Survivor区。Survivor区由FromSpace和ToSpace组成也叫S0 S1。Eden区占大容量，Survivor两个区占小容量，默认比例是8:1:1<br>
+3、元空间是方法区的一种具体实现，里面存放的是被虚拟机加载的类信息、常量、静态变量、动态生成的类等数据。</p>
+<h2 id="3-堆的垃圾回收方式">3、堆的垃圾回收方式</h2>
+<p>java堆是GC垃圾回收的主要区域。 GC分为两种： Minor GC、Full GC（也叫做Major GC）.</p>
+<h2 id="4-minor-gc简称gc">4、Minor GC(简称GC)</h2>
+<p>Minor GC是发生在新生代中的垃圾收集动作， 所采用的是复制算法。<br>
+GC一般为堆空间某个区发生了垃圾回收，<br>
+新生代（Young）几乎是所有java对象出生的地方。即java对象申请的内存以及存放都是在这个地方。java中的大部分对象通常不会长久的存活， 具有朝生夕死的特点。<br>
+当一个对象被判定为“死亡”的时候， GC就有责任来回收掉这部分对象的内存空间。<br>
+新生代是收集垃圾的频繁区域。</p>
+<h2 id="5-回收过程如下">5、回收过程如下：</h2>
+<p>当对象在 Eden ( 包括一个 Survivor 区域，这里假设是 from 区域 ) 出生后，在经过一次 Minor GC 后，如果对象还存活，并且能够被另外一块 Survivor 区域所容纳(上面已经假设为 from 区域，这里应为 to 区域，即 to 区域有足够的内存空间来存储 Eden 和 from 区域中存活的对象 )，则使用复制算法将这些仍然还存活的对象复制到另外一块 Survivor 区域 ( 即 to 区域 ) 中，然后清理所使用过的 Eden 以及 Survivor 区域 ( 即 from 区域 )，并且将这些对象的年龄设置为1，以后对象在 Survivor 区每熬过一次 Minor GC，就将对象的年龄 + 1，当对象的年龄达到某个值时 ( 默认是 15 岁，可以通过参数 -XX:MaxTenuringThreshold 来设定 )，这些对象就会成为老年代。<br>
+但这也不是一定的，对于一些较大的对象 ( 即需要分配一块较大的连续内存空间 ) 则是直接进入到老年代。</p>
+<h2 id="6-full-gc">6、Full GC</h2>
+<p>Full GC 基本都是整个堆空间及持久代发生了垃圾回收，所采用的是标记-清除算法。<br>
+现实的生活中，老年代的人通常会比新生代的人 “早死”。堆内存中的老年代(Old)不同于这个，老年代里面的对象几乎个个都是在 Survivor 区域中熬过来的，它们是不会那么容易就 “死掉” 了的。因此，Full GC 发生的次数不会有 Minor GC 那么频繁，并且做一次 Full GC 要比进行一次 Minor GC 的时间更长，一般是Minor GC的 10倍以上。<br>
+另外，标记-清除算法收集垃圾的时候会产生许多的内存碎片 ( 即不连续的内存空间 )，此后需要为较大的对象分配内存空间时，若无法找到足够的连续的内存空间，就会提前触发一次 GC 的收集动作</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[内存溢出与内存泄露]]></title>
+        <id>https://zhoujings.github.io/post/nei-cun-yi-chu-yu-nei-cun-xie-lu/</id>
+        <link href="https://zhoujings.github.io/post/nei-cun-yi-chu-yu-nei-cun-xie-lu/">
+        </link>
+        <updated>2020-10-15T09:19:13.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-内存溢出">1、内存溢出</h2>
+<p>系统无法再分配你所需要的空间。比如一个100毫升的杯子，你往里面加了95毫升的水了。然后你继续往里面加10毫升水，这时水就会溢出杯子。程序中出现这种情况就会造成内存溢出异常。</p>
+<h2 id="2-内存泄露">2、内存泄露</h2>
+<p>是指程序在申请内存后，无法释放已申请的内存空间，一次内存泄露危害可以忽略，但内存泄露堆积后果很严重，无论多少内存,迟早会被占光，就造成了内存溢出的情况。</p>
+<h2 id="3-内存泄露示例">3、内存泄露示例</h2>
+<p>如果长生命周期的对象持有短生命周期的引用，就很可能会出现内存泄露。</p>
+<pre><code class="language-base">public class Simple {
+    Object object;
+    public void method1(){
+        object = new Object();
+    //...其他代码
+        }
+    }
+    ```
+方法执行完后object的对象不会马上被认为是可释放的对象，只有所在类被释放后才会释放，这就是一种内存泄露。
+解决方法：1、可以降低object的作用域，在方法内部声明。2、方法执行完后设置对象没null。
+通过上面2中方法可以及时的对new Object()对象进行GC回收。
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[双亲委派机制与沙箱安全机制]]></title>
+        <id>https://zhoujings.github.io/post/shuang-qin-wei-pai-ji-zhi-yu-sha-xiang-an-quan-ji-zhi/</id>
+        <link href="https://zhoujings.github.io/post/shuang-qin-wei-pai-ji-zhi-yu-sha-xiang-an-quan-ji-zhi/">
+        </link>
+        <updated>2020-10-13T12:08:15.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="双亲委派机制">双亲委派机制</h2>
+<p>如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把请求委托给父加载器去完成，依次向上，因此，所有的类加载请求最终都应该被传递到顶层的启动类加载器 （Bootstrap ClassLoader)中，只有当父加载器在它的搜索范围中没有找到所需的类时，即无法完成该加载，子加载器才会尝试自己去加载该类。<br>
+　　具体流程：<br>
+　　　　1.当AppClassLoader加载一个class时，它不会尝试加载这个类，而是把类加载请求委派给父类加载器ExtClassLoader去完成。<br>
+　　　　2.当父类ExtClassLoader加载到这个.class时，他也不会尝试加载这个类，而是把类加载请求委派给父类加载器BootstrapClassLoader。<br>
+　　　　3.当BootstrapClassLoader加载到这个.class时，它会查找该类是否存在，如果不存在，就往下传递，交给ExtClassLoader，如果ExtClassLoader在自己相应的包中也没找到对应的类，就交给AppClassLoader来加载，如果AppClassLoader也没有，就报ClassNotFoundException();</p>
+<h2 id="沙箱安全机制">沙箱安全机制</h2>
+<p>比如我定义了一个类名为String所在包为java.lang，因为这个类本来是属于jdk的，如果没有沙箱安全  机制的话，这个类将会污染到我所有的String,但是由于沙箱安全机制，所以就委托顶层的bootstrap加载器查找这个类，如果没有的话就委托extsion,extsion没有就到aapclassloader，但是由于String就是jdk的源代码，所以在bootstrap那里就加载到了，先找到先使用，所以就使用bootstrap里面的String,后面的一概不能使用，这就保证了不被恶意代码污染。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[类装载器 ClassLoader]]></title>
+        <id>https://zhoujings.github.io/post/lei-zhuang-zai-qi-classloader/</id>
+        <link href="https://zhoujings.github.io/post/lei-zhuang-zai-qi-classloader/">
+        </link>
+        <updated>2020-10-13T11:40:00.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-描述">1、描述</h2>
+<pre><code>    类装载器负责装在.class文件，class文件在文件开头有特定的文件标识（cafe babe）  来标 识这是一个java的class文件。将.class文件加载到内存中，将其放在运行时数据区（Runtime   
+ Data Area）的&lt;b&gt;方法区&lt;/b&gt;（放类的描述信息）内。然后在堆区创建一个java.lang.Class
+ 对象，用来封装类在方法区内的数据结构，ClassLoader只负责class文件的加载。至于它是否可运行交给Execution Engine（执行引擎）来决定。
+</code></pre>
+<h2 id="2-分类">2、分类</h2>
+<pre><code>    ClassLoader一共有3+1个。有3个是java自带的。1是你可以自定义的。  
+    启动类加载器（Bootstrap ClassLoader）：又叫根加载器，用C++语言编写，加载rt.jar中的类。
+</code></pre>
+<p>（如rt.jar，所有的java.*开头的类均被Bootstrap ClassLoader加载）。<br>
+扩展类加载器（Extension ClassLoader）：由java语言编写。用来加载java历史长河中各种扩展的技术类。它负责加载JDK\jre\lib\ext目录下的（如javax.*开头的类）。<br>
+应用程序类加载器（Application ClassLoader）：如果用户没有自定义类加载器，则我们所写的类均被应用程序类加载器加载。<br>
+以上3个类加载器从上到下子父级依次递减。爷爷 爸爸 儿子</p>
+<h2 id="3-加载顺序">3、加载顺序</h2>
+<figure data-type="image" tabindex="1"><img src="https://zhoujings.github.io/post-images/1602590748191.png" alt="" loading="lazy"></figure>
+<p>例如当我们要使用某个类的时候，顺序是这样的，首先先去启动类加载器bootstrap找，如果有就直接用如果没有就去扩展类加载器找，如果扩展类加载器没有，就去应用程序加载器找，如果还是没有，就报ClassNotFoundException异常。</p>
 ]]></content>
     </entry>
 </feed>
