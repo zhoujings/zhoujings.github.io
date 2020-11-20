@@ -1,0 +1,291 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>雪花算法JAVA实现 | ZhouJingS的java之旅</title>
+<link rel="shortcut icon" href="https://zhoujings.github.io/favicon.ico?v=1605866393838">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://zhoujings.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="雪花算法JAVA实现 | ZhouJingS的java之旅 - Atom Feed" href="https://zhoujings.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="记一次网络上的雪花算法java实现
+public class IdWorker{
+
+    //下面两个每个5位，加起来就是10位的工作机器id
+    private long workerId;    //工作id
+    privat..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://zhoujings.github.io">
+  <img class="avatar" src="https://zhoujings.github.io/images/avatar.png?v=1605866393838" alt="">
+  </a>
+  <h1 class="site-title">
+    ZhouJingS的java之旅
+  </h1>
+  <p class="site-description">
+    长风破浪会有时，直挂云帆济沧海。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              雪花算法JAVA实现
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-11-20
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>记一次网络上的雪花算法java实现</p>
+<pre><code class="language-java">public class IdWorker{
+
+    //下面两个每个5位，加起来就是10位的工作机器id
+    private long workerId;    //工作id
+    private long datacenterId;   //数据id
+    //12位的序列号
+    private long sequence;
+
+    public IdWorker(long workerId, long datacenterId, long sequence){
+        // sanity check for workerId
+        if (workerId &gt; maxWorkerId || workerId &lt; 0) {
+            throw new IllegalArgumentException(String.format(&quot;worker Id can't be greater than %d or less than 0&quot;,maxWorkerId));
+        }
+        if (datacenterId &gt; maxDatacenterId || datacenterId &lt; 0) {
+            throw new IllegalArgumentException(String.format(&quot;datacenter Id can't be greater than %d or less than 0&quot;,maxDatacenterId));
+        }
+        System.out.printf(&quot;worker starting. timestamp left shift %d, datacenter id bits %d, worker id bits %d, sequence bits %d, workerid %d&quot;,
+                timestampLeftShift, datacenterIdBits, workerIdBits, sequenceBits, workerId);
+
+        this.workerId = workerId;
+        this.datacenterId = datacenterId;
+        this.sequence = sequence;
+    }
+
+    //初始时间戳
+    private long twepoch = 1288834974657L;
+
+    //长度为5位
+    private long workerIdBits = 5L;
+    private long datacenterIdBits = 5L;
+    //最大值
+    private long maxWorkerId = -1L ^ (-1L &lt;&lt; workerIdBits);
+    private long maxDatacenterId = -1L ^ (-1L &lt;&lt; datacenterIdBits);
+    //序列号id长度
+    private long sequenceBits = 12L;
+    //序列号最大值
+    private long sequenceMask = -1L ^ (-1L &lt;&lt; sequenceBits);
+    
+    //工作id需要左移的位数，12位
+    private long workerIdShift = sequenceBits;
+   //数据id需要左移位数 12+5=17位
+    private long datacenterIdShift = sequenceBits + workerIdBits;
+    //时间戳需要左移位数 12+5+5=22位
+    private long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
+    
+    //上次时间戳，初始值为负数
+    private long lastTimestamp = -1L;
+
+    public long getWorkerId(){
+        return workerId;
+    }
+
+    public long getDatacenterId(){
+        return datacenterId;
+    }
+
+    public long getTimestamp(){
+        return System.currentTimeMillis();
+    }
+
+     //下一个ID生成算法
+    public synchronized long nextId() {
+        long timestamp = timeGen();
+
+        //获取当前时间戳如果小于上次时间戳，则表示时间戳获取出现异常
+        if (timestamp &lt; lastTimestamp) {
+            System.err.printf(&quot;clock is moving backwards.  Rejecting requests until %d.&quot;, lastTimestamp);
+            throw new RuntimeException(String.format(&quot;Clock moved backwards.  Refusing to generate id for %d milliseconds&quot;,
+                    lastTimestamp - timestamp));
+        }
+
+        //获取当前时间戳如果等于上次时间戳（同一毫秒内），则在序列号加一；否则序列号赋值为0，从0开始。
+        if (lastTimestamp == timestamp) {
+            sequence = (sequence + 1) &amp; sequenceMask;
+            if (sequence == 0) {
+                timestamp = tilNextMillis(lastTimestamp);
+            }
+        } else {
+            sequence = 0;
+        }
+        
+        //将上次时间戳值刷新
+        lastTimestamp = timestamp;
+
+        /**
+          * 返回结果：
+          * (timestamp - twepoch) &lt;&lt; timestampLeftShift) 表示将时间戳减去初始时间戳，再左移相应位数
+          * (datacenterId &lt;&lt; datacenterIdShift) 表示将数据id左移相应位数
+          * (workerId &lt;&lt; workerIdShift) 表示将工作id左移相应位数
+          * | 是按位或运算符，例如：x | y，只有当x，y都为0的时候结果才为0，其它情况结果都为1。
+          * 因为个部分只有相应位上的值有意义，其它位上都是0，所以将各部分的值进行 | 运算就能得到最终拼接好的id
+        */
+        return ((timestamp - twepoch) &lt;&lt; timestampLeftShift) |
+                (datacenterId &lt;&lt; datacenterIdShift) |
+                (workerId &lt;&lt; workerIdShift) |
+                sequence;
+    }
+
+    //获取时间戳，并与上次时间戳比较
+    private long tilNextMillis(long lastTimestamp) {
+        long timestamp = timeGen();
+        while (timestamp &lt;= lastTimestamp) {
+            timestamp = timeGen();
+        }
+        return timestamp;
+    }
+
+    //获取系统时间戳
+    private long timeGen(){
+        return System.currentTimeMillis();
+    }
+
+    //---------------测试---------------
+    public static void main(String[] args) {
+        IdWorker worker = new IdWorker(1,1,1);
+        for (int i = 0; i &lt; 30; i++) {
+            System.out.println(worker.nextId());
+        }
+    }
+
+}```</code></pre>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://zhoujings.github.io/post/hystrix-zhi-xing-liu-cheng-tu-jie/">
+              <h3 class="post-title">
+                Hystrix执行流程图解
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  
+  <a class="rss" href="https://zhoujings.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://zhoujings.github.io</id>
     <title>ZhouJingS的java之旅</title>
-    <updated>2020-10-25T14:55:00.517Z</updated>
+    <updated>2020-11-20T10:00:26.525Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://zhoujings.github.io"/>
     <link rel="self" href="https://zhoujings.github.io/atom.xml"/>
@@ -10,6 +10,136 @@
     <logo>https://zhoujings.github.io/images/avatar.png</logo>
     <icon>https://zhoujings.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, ZhouJingS的java之旅</rights>
+    <entry>
+        <title type="html"><![CDATA[雪花算法JAVA实现]]></title>
+        <id>https://zhoujings.github.io/post/xue-hua-suan-fa-java-shi-xian/</id>
+        <link href="https://zhoujings.github.io/post/xue-hua-suan-fa-java-shi-xian/">
+        </link>
+        <updated>2020-11-20T09:57:57.000Z</updated>
+        <content type="html"><![CDATA[<p>记一次网络上的雪花算法java实现</p>
+<pre><code class="language-java">public class IdWorker{
+
+    //下面两个每个5位，加起来就是10位的工作机器id
+    private long workerId;    //工作id
+    private long datacenterId;   //数据id
+    //12位的序列号
+    private long sequence;
+
+    public IdWorker(long workerId, long datacenterId, long sequence){
+        // sanity check for workerId
+        if (workerId &gt; maxWorkerId || workerId &lt; 0) {
+            throw new IllegalArgumentException(String.format(&quot;worker Id can't be greater than %d or less than 0&quot;,maxWorkerId));
+        }
+        if (datacenterId &gt; maxDatacenterId || datacenterId &lt; 0) {
+            throw new IllegalArgumentException(String.format(&quot;datacenter Id can't be greater than %d or less than 0&quot;,maxDatacenterId));
+        }
+        System.out.printf(&quot;worker starting. timestamp left shift %d, datacenter id bits %d, worker id bits %d, sequence bits %d, workerid %d&quot;,
+                timestampLeftShift, datacenterIdBits, workerIdBits, sequenceBits, workerId);
+
+        this.workerId = workerId;
+        this.datacenterId = datacenterId;
+        this.sequence = sequence;
+    }
+
+    //初始时间戳
+    private long twepoch = 1288834974657L;
+
+    //长度为5位
+    private long workerIdBits = 5L;
+    private long datacenterIdBits = 5L;
+    //最大值
+    private long maxWorkerId = -1L ^ (-1L &lt;&lt; workerIdBits);
+    private long maxDatacenterId = -1L ^ (-1L &lt;&lt; datacenterIdBits);
+    //序列号id长度
+    private long sequenceBits = 12L;
+    //序列号最大值
+    private long sequenceMask = -1L ^ (-1L &lt;&lt; sequenceBits);
+    
+    //工作id需要左移的位数，12位
+    private long workerIdShift = sequenceBits;
+   //数据id需要左移位数 12+5=17位
+    private long datacenterIdShift = sequenceBits + workerIdBits;
+    //时间戳需要左移位数 12+5+5=22位
+    private long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
+    
+    //上次时间戳，初始值为负数
+    private long lastTimestamp = -1L;
+
+    public long getWorkerId(){
+        return workerId;
+    }
+
+    public long getDatacenterId(){
+        return datacenterId;
+    }
+
+    public long getTimestamp(){
+        return System.currentTimeMillis();
+    }
+
+     //下一个ID生成算法
+    public synchronized long nextId() {
+        long timestamp = timeGen();
+
+        //获取当前时间戳如果小于上次时间戳，则表示时间戳获取出现异常
+        if (timestamp &lt; lastTimestamp) {
+            System.err.printf(&quot;clock is moving backwards.  Rejecting requests until %d.&quot;, lastTimestamp);
+            throw new RuntimeException(String.format(&quot;Clock moved backwards.  Refusing to generate id for %d milliseconds&quot;,
+                    lastTimestamp - timestamp));
+        }
+
+        //获取当前时间戳如果等于上次时间戳（同一毫秒内），则在序列号加一；否则序列号赋值为0，从0开始。
+        if (lastTimestamp == timestamp) {
+            sequence = (sequence + 1) &amp; sequenceMask;
+            if (sequence == 0) {
+                timestamp = tilNextMillis(lastTimestamp);
+            }
+        } else {
+            sequence = 0;
+        }
+        
+        //将上次时间戳值刷新
+        lastTimestamp = timestamp;
+
+        /**
+          * 返回结果：
+          * (timestamp - twepoch) &lt;&lt; timestampLeftShift) 表示将时间戳减去初始时间戳，再左移相应位数
+          * (datacenterId &lt;&lt; datacenterIdShift) 表示将数据id左移相应位数
+          * (workerId &lt;&lt; workerIdShift) 表示将工作id左移相应位数
+          * | 是按位或运算符，例如：x | y，只有当x，y都为0的时候结果才为0，其它情况结果都为1。
+          * 因为个部分只有相应位上的值有意义，其它位上都是0，所以将各部分的值进行 | 运算就能得到最终拼接好的id
+        */
+        return ((timestamp - twepoch) &lt;&lt; timestampLeftShift) |
+                (datacenterId &lt;&lt; datacenterIdShift) |
+                (workerId &lt;&lt; workerIdShift) |
+                sequence;
+    }
+
+    //获取时间戳，并与上次时间戳比较
+    private long tilNextMillis(long lastTimestamp) {
+        long timestamp = timeGen();
+        while (timestamp &lt;= lastTimestamp) {
+            timestamp = timeGen();
+        }
+        return timestamp;
+    }
+
+    //获取系统时间戳
+    private long timeGen(){
+        return System.currentTimeMillis();
+    }
+
+    //---------------测试---------------
+    public static void main(String[] args) {
+        IdWorker worker = new IdWorker(1,1,1);
+        for (int i = 0; i &lt; 30; i++) {
+            System.out.println(worker.nextId());
+        }
+    }
+
+}```</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Hystrix执行流程图解]]></title>
         <id>https://zhoujings.github.io/post/hystrix-zhi-xing-liu-cheng-tu-jie/</id>
@@ -317,30 +447,6 @@ GC一般为堆空间某个区发生了垃圾回收，<br>
 　　　　3.当BootstrapClassLoader加载到这个.class时，它会查找该类是否存在，如果不存在，就往下传递，交给ExtClassLoader，如果ExtClassLoader在自己相应的包中也没找到对应的类，就交给AppClassLoader来加载，如果AppClassLoader也没有，就报ClassNotFoundException();</p>
 <h2 id="沙箱安全机制">沙箱安全机制</h2>
 <p>比如我定义了一个类名为String所在包为java.lang，因为这个类本来是属于jdk的，如果没有沙箱安全  机制的话，这个类将会污染到我所有的String,但是由于沙箱安全机制，所以就委托顶层的bootstrap加载器查找这个类，如果没有的话就委托extsion,extsion没有就到aapclassloader，但是由于String就是jdk的源代码，所以在bootstrap那里就加载到了，先找到先使用，所以就使用bootstrap里面的String,后面的一概不能使用，这就保证了不被恶意代码污染。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[类装载器 ClassLoader]]></title>
-        <id>https://zhoujings.github.io/post/lei-zhuang-zai-qi-classloader/</id>
-        <link href="https://zhoujings.github.io/post/lei-zhuang-zai-qi-classloader/">
-        </link>
-        <updated>2020-10-13T11:40:00.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-描述">1、描述</h2>
-<pre><code>    类装载器负责装在.class文件，class文件在文件开头有特定的文件标识（cafe babe）  来标 识这是一个java的class文件。将.class文件加载到内存中，将其放在运行时数据区（Runtime   
- Data Area）的&lt;b&gt;方法区&lt;/b&gt;（放类的描述信息）内。然后在堆区创建一个java.lang.Class
- 对象，用来封装类在方法区内的数据结构，ClassLoader只负责class文件的加载。至于它是否可运行交给Execution Engine（执行引擎）来决定。
-</code></pre>
-<h2 id="2-分类">2、分类</h2>
-<pre><code>    ClassLoader一共有3+1个。有3个是java自带的。1是你可以自定义的。  
-    启动类加载器（Bootstrap ClassLoader）：又叫根加载器，用C++语言编写，加载rt.jar中的类。
-</code></pre>
-<p>（如rt.jar，所有的java.*开头的类均被Bootstrap ClassLoader加载）。<br>
-扩展类加载器（Extension ClassLoader）：由java语言编写。用来加载java历史长河中各种扩展的技术类。它负责加载JDK\jre\lib\ext目录下的（如javax.*开头的类）。<br>
-应用程序类加载器（Application ClassLoader）：如果用户没有自定义类加载器，则我们所写的类均被应用程序类加载器加载。<br>
-以上3个类加载器从上到下子父级依次递减。爷爷 爸爸 儿子</p>
-<h2 id="3-加载顺序">3、加载顺序</h2>
-<figure data-type="image" tabindex="1"><img src="https://zhoujings.github.io/post-images/1602590748191.png" alt="" loading="lazy"></figure>
-<p>例如当我们要使用某个类的时候，顺序是这样的，首先先去启动类加载器bootstrap找，如果有就直接用如果没有就去扩展类加载器找，如果扩展类加载器没有，就去应用程序加载器找，如果还是没有，就报ClassNotFoundException异常。</p>
 ]]></content>
     </entry>
 </feed>
